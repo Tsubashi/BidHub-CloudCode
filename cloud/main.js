@@ -26,23 +26,24 @@ Parse.Cloud.beforeSave("NewBid", function(request, response) {
 			}
 
 			// Make sure the bid isn't below the starting price.
-			if (currentBid.get("amt") < item.get("price")) {
+			if (currentBid.get("maxBid") < item.get("price")) {
 				response.error("Your bid needs to be higher than the item's starting price.");
 				return;
 			}
 
 			// Make sure the bid increments by at least the minimum increment
-            minIncrement = item.get("priceIncrement");
+			// Parse likes to return strings not numbers, hence the Number() function
+            minIncrement = Number(item.get("priceIncrement"));
             if (!minIncrement) {
                 minIncrement = 1;
             }
-			if (currentBid.get("amt") < (item.get("currentPrice") + minIncrement )) {
+			if (Number(currentBid.get("maxBid")) < (Number(item.get("currentPrice")) + minIncrement )) {
 				response.error("You need to raise the current price by at least $" + minIncrement);
 				return;
 			}
 
 			// Sanity check. In-house testing revealed that people love bidding one trillion dollars.
-			if (currentBid.get("amt") > 99999) {
+			if (currentBid.get("maxBid") > 99999) {
 				response.error("Remind me to apply for your job.");
 				return;
 			}
@@ -50,7 +51,7 @@ Parse.Cloud.beforeSave("NewBid", function(request, response) {
 			// Retrieve all previous bids on this item.
 			query = new Parse.Query("NewBid");
 			query.equalTo("item", request.object.get("item"));
-			query.descending("amt", "createdAt");
+			query.descending("maxBid", "createdAt");
 			query.limit = 1000; // Default is 100
 			query.find({
 			  success: function(allWinningBids) {
@@ -72,7 +73,7 @@ Parse.Cloud.beforeSave("NewBid", function(request, response) {
    			    allWinningBids.forEach(function(bid) {
 			   		var curBid = bidsForEmails[bid.get("email")]
 			   		if (curBid) {
-		   				bidsForEmails[bid.get("email")] = (curBid.get("amt") > bid.get("amt") ? curBid : bid);
+		   				bidsForEmails[bid.get("email")] = (curBid.get("maxBid") > bid.get("maxBid") ? curBid : bid);
 			   		}
 			   		else {
 			   			bidsForEmails[bid.get("email")] = bid;
@@ -83,8 +84,8 @@ Parse.Cloud.beforeSave("NewBid", function(request, response) {
 			  	// If the new bid is higher, remove the old bid.
    			    var previousMaxBid = bidsForEmails[currentBid.get("email")];
    			    if (previousMaxBid) {
-   			    	if (currentBid.get("amt") <= previousMaxBid.get("amt")){
-			    		response.error("You already bid $" + previousMaxBid.get("amt") + " - you need to raise your bid!");
+   			    	if (currentBid.get("maxBid") <= previousMaxBid.get("maxBid")){
+			    		response.error("You already bid $" + previousMaxBid.get("maxBid") + " - you need to raise your bid!");
 		    			return;
    			    	}
 					else {
@@ -101,8 +102,8 @@ Parse.Cloud.beforeSave("NewBid", function(request, response) {
 			  	// Add the new bid and sort by amount, secondarily sorting by time.
    			    allWinningBids.push(currentBid)
    			    allWinningBids = allWinningBids.sort(function(a, b){
-    					var keyA = a.get("amt");
-    					var keyB = b.get("amt");
+    					var keyA = a.get("maxBid");
+    					var keyB = b.get("maxBid");
 
 					    // Sort on amount if they're different.
 					    if (keyA < keyB) {
@@ -146,7 +147,7 @@ Parse.Cloud.beforeSave("NewBid", function(request, response) {
 					// Update the item's current price and current winners.
 					for (var i = 0; (i < currentWinningBids.length); i++) {
 						var bid = currentWinningBids[i];
-						currentPrice.push(bid.get("amt"));
+						currentPrice.push(bid.get("maxBid"));
 						currentWinners.push(bid.get("email"));
 					}
 
@@ -161,7 +162,8 @@ Parse.Cloud.beforeSave("NewBid", function(request, response) {
 				    item.set("allBidders", uniqueArray);
 					item.set("currentPrice", currentPrice);
 					item.set("currentWinners", currentWinners);
-					item.set("previousWinners", previousWinners)
+					item.set("previousWinners", previousWinners);
+					item.set("price", Math.max(...currentPrice));
 
 					// Save all these updates back to the Item.
 					item.save(null, {
@@ -194,7 +196,7 @@ Parse.Cloud.beforeSave("NewBid", function(request, response) {
 		    response.error("Error: " + error.code + " " + error.message);
 		}
 	});
-	
+
 });
 
 // This code is run after the successful save of a new bid.
@@ -216,7 +218,7 @@ Parse.Cloud.afterSave("NewBid", function(request, response) {
 			var index = previousWinners.indexOf(currentBid.get("email"));
 			if (index > -1) {
 				previousWinners.splice(index, 1);
-			}	
+			}
 
 			// Grab installations where that user was previously a winner but no longer is.
 			var query = new Parse.Query(Parse.Installation);
@@ -234,12 +236,12 @@ Parse.Cloud.afterSave("NewBid", function(request, response) {
 			Parse.Push.send({
 			  where: query,
 			  data: {
-			    alert: identity + " bid $" + currentBid.get("amt") + " on " + item.get("name") + ". Surely you won't stand for this.", // People like sassy apps.
+			    alert: identity + " bid $" + currentBid.get("maxBid") + " on " + item.get("name") + ". Surely you won't stand for this.", // People like sassy apps.
 			    itemname: item.get("name"),
 			    personname: identity,
 			    itemid: item.id,
 			    sound: "default",
-			    amt: currentBid.get("amt"),
+			    maxBid: currentBid.get("maxBid"),
 			    email: currentBid.get("email")
 			  }
 			}, {
@@ -248,10 +250,9 @@ Parse.Cloud.afterSave("NewBid", function(request, response) {
 			  },
 			  error: function(error) {
 			    console.error("Push failed: " +error)
-			  }
+			  }, useMasterKey: true 
 			});
-
-		}, 
+		},
 		error: function(error) {
 		    console.error("Push failed: " +error)
 		}
@@ -271,21 +272,23 @@ Parse.Cloud.job("InitializeForAuction", function(request, status) {
 	item.set("donorname", "Generous Donor");
 	item.set("price", 50);
     item.set("priceIncrement", 1);
-	item.set("imageurl", "http://i.imgur.com/kCtWFwr.png");
-	item.set("qty", "3");
+	item.set("imageurl", "https://ucrpc.aquaveo.com/TestObject7.jpg");
+	item.set("qty", "1");
+	item.set("fmv", "500");
+	item.set("", "");
 	item.set("currentPrice", []);
 	item.set("numberOfBids", 0);
 	item.set("allBidders", []);
 	item.set("currentWinners", []);
 	item.set("previousWinners", [])
 	item.set("opentime", new Date("Dec 05, 2014, 05:00"));
-	item.set("closetime", new Date("Dec 06, 2015, 05:00"));
+	item.set("closetime", new Date("Dec 06, 2020, 05:00"));
 	item.save(null, {
 		success: function(item) {
 			var NewBid = Parse.Object.extend("NewBid"); 
 			var bid = new NewBid();  
 			bid.set("item", "");
-			bid.set("amt", 0);
+			bid.set("maxBid", 0);
 			bid.set("email", "");
 			bid.set("name", "");
 			bid.save(null, {
