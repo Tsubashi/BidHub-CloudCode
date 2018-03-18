@@ -236,7 +236,7 @@ Parse.Cloud.afterSave("NewBid", function(request, response) {
 			Parse.Push.send({
 			  where: query,
 			  data: {
-			    alert: identity + " bid $" + currentBid.get("maxBid") + " on " + item.get("name") + ". Surely you won't stand for this.", // People like sassy apps.
+			    alert: "Someone has outbid you by bidding $" + currentBid.get("maxBid") + " on " + item.get("name") + ". Surely you won't stand for this.", // People like sassy apps.
 			    itemname: item.get("name"),
 			    personname: identity,
 			    itemid: item.id,
