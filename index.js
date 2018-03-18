@@ -23,9 +23,13 @@ var api = new ParseServer({
       apiKey: 'AAAA40Mq7Ms:APA91bEWWBvZeh9K4GM3SliyQWQcrFOFU2PtH0ZYsxUJKY9BY0a8Z36DCPL-2LgJAaAtX4zY4gksd_wHFe6xlPt1flvCUnTQ2qQYsB6AeSBP3LvfEf4kUFnnIpDhMBZ_sW1svCQ46I1D'
     },
     ios: {
+      pfx: '/etc/parse/ucrpc_dev.p12',
+      topic: 'com.aquaveo.UCRPCAuction',
+      production: false
+    },
+    ios: {
       pfx: '/etc/parse/ucrpc.p12',
-      passphrase: 'keep15/hogged',
-      topic: 'com.aquaveo.UCRPAuction',
+      topic: 'com.aquaveo.UCRPCAuction',
       production: true
     }
   },
