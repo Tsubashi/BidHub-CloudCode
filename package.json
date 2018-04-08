@@ -1,7 +1,7 @@
 {
-  "name": "parse-server-example",
+  "name": "BidHub-CloudCode",
   "version": "1.4.0",
-  "description": "An example Parse API server using the parse-server module",
+  "description": "A Parse API server to service a BidHub Installation",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,7 +12,8 @@
     "express": "~4.11.x",
     "kerberos": "~0.0.x",
     "parse": "~1.8.0",
-    "parse-server": "*"
+    "parse-server": "*",
+    "braintree": "~2.8.0"
   },
   "scripts": {
     "start": "node index.js"
