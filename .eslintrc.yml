@@ -1,0 +1,5 @@
+env:
+  node: True
+  es6: True
+extends: ./node_modules/eslint-config-google/index.js
+
