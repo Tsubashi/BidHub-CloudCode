@@ -20,6 +20,8 @@ let api = new ParseServer({
   databaseURI: databaseUri || 'mongodb://localhost:27017/dev',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
   appId: process.env.APP_ID || 'UCRPCAuction',
+  appName: process.env.APP_NAME || 'UCRPC Auction',
+  publicServerURL: process.env.PUBLIC_SERVER_URL || 'https://auction.ucrpc.org',
   masterKey: process.env.MASTER_KEY || 'bba0f20f-7d2a-48c5-bd91-a0061da55985',
   serverURL: process.env.SERVER_URL || 'http://localhost:1337/parse',
   push: {
@@ -40,12 +42,16 @@ let api = new ParseServer({
       production: true,
     },
   },
+  verifyUserEmails: true,
+  emailAdapter: {
+    module: '@parse/simple-mailgun-adapter',
+    options: {
+      apiKey: 'key-6d84442fc7f44c668cb5a9273b41af70',
+      domain: 'auction.ucrpc.org',
+      fromAddress: 'auctionmaster',
+    },
+  },
 });
-// Client-keys like the javascript key or the .NET key are not necessary with
-// parse-server. If you wish you require them, you can set them as options in
-// the initialization above:
-// javascriptKey, restAPIKey, dotNetKey, clientKey
-
 let app = express();
 
 // BrainTree Endpoints
@@ -69,7 +75,7 @@ app.post(paymentPrefix + '/checkout', function(req, res) {
 });
 
 // Serve static assets from the /public folder
-app.use('/public', express.static(path.join(__dirname, '/public')));
+app.use('/app', express.static(path.join(__dirname, '/app')));
 
 // Serve the Parse API on the /parse URL prefix
 let mountPath = process.env.PARSE_MOUNT || '/parse';
@@ -77,7 +83,7 @@ app.use(mountPath, api);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function(req, res) {
-  res.status(200).send('I dream of being a website.');
+  res.sendfile('index.html', {root: path.join(__dirname, '/app')});
 });
 
 let port = process.env.PORT || 1337;
