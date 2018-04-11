@@ -1,6 +1,6 @@
-// Example express application adding the parse-server module to expose Parse
-// compatible API routes.
 
+// ////////////////
+// CONFIGURATION
 let express = require('express');
 let ParseServer = require('parse-server').ParseServer;
 let path = require('path');
@@ -54,6 +54,9 @@ let api = new ParseServer({
 });
 let app = express();
 
+// ////////////////
+// ROUTES
+
 // BrainTree Endpoints
 app.get(paymentPrefix + '/client_token', function(req, res) {
   gateway.clientToken.generate({}, function(err, response) {
@@ -75,7 +78,7 @@ app.post(paymentPrefix + '/checkout', function(req, res) {
 });
 
 // Serve static assets from the /public folder
-app.use('/app', express.static(path.join(__dirname, '/app')));
+app.use('/static', express.static(path.join(__dirname, '/static')));
 
 // Serve the Parse API on the /parse URL prefix
 let mountPath = process.env.PARSE_MOUNT || '/parse';
@@ -83,7 +86,7 @@ app.use(mountPath, api);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function(req, res) {
-  res.sendfile('index.html', {root: path.join(__dirname, '/app')});
+  res.sendfile('index.html', {root: path.join(__dirname, '/static')});
 });
 
 let port = process.env.PORT || 1337;
