@@ -1,0 +1,2 @@
+# Only an example .env file should exist in the repo. Changes to it should not be committed
+.env
