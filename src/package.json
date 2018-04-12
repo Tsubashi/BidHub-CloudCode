@@ -13,7 +13,8 @@
     "kerberos": "~0.0.x",
     "parse": "~1.8.0",
     "parse-server": "*",
-    "braintree": "~2.8.0"
+    "braintree": "~2.8.0",
+    "dotenv": "~5.0.1"
   },
   "devDependencies": {
     "eslint": ">=4.1.1",

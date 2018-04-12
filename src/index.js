@@ -1,57 +1,62 @@
 
 // ////////////////
 // CONFIGURATION
+console.log('Setting up Parse Server');
+require('dotenv').config();
 let express = require('express');
 let ParseServer = require('parse-server').ParseServer;
 let path = require('path');
 let braintree = require('braintree');
 
-let databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
 let paymentPrefix = '/payment';
+let braintreeMode = braintree.Environment.Production;
+if (process.env.BRAINTREE_MODE != 'Production') {
+  braintreeMode = braintree.Environment.Sandbox;
+}
+
 let gateway = braintree.connect({
-    environment: braintree.Environment.Sandbox,
-    merchantId: '5zbdx785v9729wyt',
-    publicKey: 'gbfn45btrnw526fk',
-    privateKey: '44012e7e363864a6ac98db9038f89c05',
+    environment: braintreeMode,
+    merchantId: process.env.BRAINTREE_ID || '',
+    publicKey: process.env.BRAINTREE_PUBLIC_KEY || '',
+    privateKey: process.env.BRAINTREE_PRIVATE_KEY || '',
 });
 
-let api = new ParseServer({
-  databaseURI: databaseUri || 'mongodb://localhost:27017/dev',
+let parseConfig = {
+  databaseURI: process.env.DATABASE_URI || 'mongodb://localhost:27017/dev',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
-  appId: process.env.APP_ID || 'UCRPCAuction',
-  appName: process.env.APP_NAME || 'UCRPC Auction',
-  publicServerURL: process.env.PUBLIC_SERVER_URL || 'https://auction.ucrpc.org',
-  masterKey: process.env.MASTER_KEY || 'bba0f20f-7d2a-48c5-bd91-a0061da55985',
+  appId: process.env.APP_ID || 'Auction',
+  appName: process.env.APP_NAME || 'The Auction',
+  publicServerURL: process.env.PUBLIC_SERVER_URL || 'https://localhost:1337',
+  masterKey: process.env.MASTER_KEY || '',
   serverURL: process.env.SERVER_URL || 'http://localhost:1337/parse',
-  push: {
-    android: {
-      senderID: '976084462795',
-      apiKey: 'AAAA40Mq7Ms:APA91bEWWBvZeh9K4GM3SliyQWQcrFOFU2PtH0ZYsxUJKY9B' +
-              'Y0a8Z36DCPL-2LgJAaAtX4zY4gksd_wHFe6xlPt1flvCUnTQ2qQYsB6AeSBP' +
-              '3LvfEf4kUFnnIpDhMBZ_sW1svCQ46I1D',
-    },
-    ios: {
-      pfx: '/etc/parse/ucrpc_dev.p12',
-      topic: 'com.aquaveo.UCRPCAuction',
-      production: false,
-    },
-    ios: {
-      pfx: '/etc/parse/ucrpc.p12',
-      topic: 'com.aquaveo.UCRPCAuction',
-      production: true,
-    },
-  },
   verifyUserEmails: true,
   emailAdapter: {
     module: '@parse/simple-mailgun-adapter',
     options: {
-      apiKey: 'key-6d84442fc7f44c668cb5a9273b41af70',
-      domain: 'auction.ucrpc.org',
-      fromAddress: 'auctionmaster',
+      apiKey: process.env.MAILGUN_API_KEY || '',
+      domain: process.env.MAILGUN_DOMAIN || 'localhost',
+      fromAddress: process.env.MAILGUN_FROM_ADDRESS || 'auctionmaster',
     },
   },
-});
+};
+let pushConfig = {};
+if (process.env.PUSH_ANDROID_ID) {
+  pushConfig.android = {
+    senderID: process.env.PUSH_ANDROID_ID,
+    apiKey: process.env.PUSH_ANDROID_API_KEY || '',
+  };
+}
+if (process.env.PUSH_IOS_PRODUCTION_KEY) {
+  pushConfig.ios = {
+    pfx: process.env.PUSH_IOS_PRODUCTION_KEY,
+    topic: process.env.PUSH_IOS_TOPIC || 'com.example.Auction',
+    production: (process.env.PUSH_IOS_MODE == 'Production'),
+  };
+};
+
+parseConfig.push = pushConfig;
+let api = new ParseServer(parseConfig);
 let app = express();
 
 // ////////////////
