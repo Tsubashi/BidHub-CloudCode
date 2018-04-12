@@ -1,5 +1,7 @@
 let ParseServer = require('parse-server').ParseServer;
 
+// ////////////////
+// SETUP
 let parseConfig = {
   databaseURI: process.env.DATABASE_URI || 'mongodb://localhost:27017/dev',
   cloud: __dirname + '/../cloud/main.js',
@@ -33,6 +35,8 @@ if (process.env.PUSH_IOS_PRODUCTION_KEY) {
   };
 };
 
+// ////////////////
+// ROUTES
 parseConfig.push = pushConfig;
 let api = new ParseServer(parseConfig);
 

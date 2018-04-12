@@ -2,6 +2,8 @@ let braintree = require('braintree');
 let express = require('express');
 let router = express.Router(); // eslint-disable-line new-cap
 
+// ////////////////
+// SETUP
 let braintreeMode = braintree.Environment.Production;
 if (process.env.BRAINTREE_MODE != 'Production') {
   braintreeMode = braintree.Environment.Sandbox;
@@ -14,6 +16,8 @@ let gateway = braintree.connect({
     privateKey: process.env.BRAINTREE_PRIVATE_KEY || '',
 });
 
+// ////////////////
+// ROUTES
 router.get('/client_token', function(req, res) {
   gateway.clientToken.generate({}, function(err, response) {
     res.send(response.clientToken);
