@@ -4,8 +4,10 @@
 console.log('Setting up Server...');
 require('dotenv').config();
 let express = require('express');
+let bodyParser = require('body-parser');
 let path = require('path');
 let nunjucks = require('nunjucks');
+
 let app = express();
 if (process.env.NODE_ENV == 'Production') {
   nunjucks.configure('templates', {express: app});
@@ -15,6 +17,7 @@ if (process.env.NODE_ENV == 'Production') {
 
 // ////////////////
 // ROUTES
+app.use(bodyParser.urlencoded({extended: false}));
 
 console.log('. Adding Static Routes');
 app.use('/static', express.static(path.join(__dirname, '/static')));

@@ -24,6 +24,22 @@ router.get('/client_token', function(req, res) {
   });
 });
 
+router.get('/checkout', function(req, res) {
+  let error = {
+    code: -2,
+    message: 'No Payment Data',
+  };
+  res.render('error.html', {
+    title: 'Error',
+    heading: 'Wait a second...',
+    msg: 'It looks like you came here without any payment data. This can '
+       + 'happen if you manually navigate to this page, rather that get '
+       + 'here by submitting the form. Head back to the payment page to '
+       + 'enter your payment details.',
+    errors: error,
+  });
+});
+
 router.post('/checkout', function(req, res) {
   let clientNonce = req.body.payment_method_nonce;
   gateway.transaction.sale({
@@ -33,7 +49,17 @@ router.post('/checkout', function(req, res) {
       submitForSettlement: true,
     },
   }, function(err, result) {
-    // TODO: Handle Errors
+    if (result.success || result.transaction) {
+      res.redirect('/auction/checkout?txid=' + result.transaction.id);
+    } else {
+      transactionErrors = result.errors.deepErrors();
+      res.render('error.html', {
+        title: 'Transaction Error',
+        heading: 'Woah There!',
+        msg: 'Something has gone terribly wrong in processing your payment.',
+        errors: transactionErrors,
+      });
+    }
   });
 });
 

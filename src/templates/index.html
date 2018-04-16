@@ -1,5 +1,16 @@
 {% extends "header_footer.html" %}
 
+{% block extraJS %}
+  <script type="text/javascript" src="/static/js/parallax.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('.hero').each(function(){
+         $(this).parallax("50%", 0.3); 
+      });
+    });
+  </script>
+{% endblock %}
+
 {% block sections %}
 	<!--  About Section  -->
 	<section class="hero" id="hero">
@@ -53,7 +64,7 @@
                 </div>
                 <div class="pure-controls">
                   <button type="submit" class="text-uppercase pure-button pure-button-primary" id="do_sign_in">
-                    <span>Show me the Items!</span>
+                    Show me the Items!
                   </button>
                 </div>
               </div>

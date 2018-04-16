@@ -1,7 +1,11 @@
 {% extends "two-column.html" %}
 
-{% block extraStylesheets %}
+{% block extraCSS %}
 <link rel="stylesheet" type="text/css" href="/static/css/checkout.css"/>
+{% endblock %}
+
+{% block extraJS %}
+<script src="https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js"></script>
 {% endblock %}
 
 {% block left %}
@@ -29,16 +33,75 @@
 {% endblock %}
 
 {% block right %}
-{% if totalDue > 0 %}
-
+{% if txid and txid != 0 %}
+<img src="/static/img/checkmark.png" alt="Success!" />
+<h2 style="display: inline">Success!</h2>
+<p>Thank you for participating in our silent auction.</p>
+<p>Your transaction ID is: <span style="font-weight: bold">{{ txid }}</span></p>
+<p>If you have further items to purchase, you may <a href="/auction/checkout">return to the Payments page</a>.
 {% else %}
-  {% if items | length > 0 %}
-    <h1>Woohoo!</h1>
-    <p>You have purchased all the items you won. Doesn't that feel great?</p>
-    <p>Thank you so much for your participation. If you would like to learn about other ways you can contribute, click the "Get Involved" button above.</p>
+  {% if totalDue > 0 %}
+  <div id="payment-box">
+    <div class="loader"></div>
+  </div>
+
+  <form id="payment-form" action="/payment/checkout" method="post">
+    <input id="nonce" type="hidden" name="payment_method_nonce"></input>
+    <button id="submit-button" type="submit" style="display: none; border-radius: 4px;">Submit Payment</button>
+  </form>
+
+  <script>
+  // Get our Payment Token
+  var result = $.get("/payment/client_token", function(data, status) {
+    var submitButton = document.querySelector('#submit-button');
+    var paymentBox = document.querySelector('#payment-box');
+    var form = document.querySelector("#payment-form");
+      
+    paymentBox.innerHTML = "";
+
+    braintree.dropin.create({
+      authorization: data,
+      selector: '#payment-box',
+      paypal: {
+        flow: 'vault'
+      }
+    }, function (err, dropinInstance) {
+      if (err) {
+        // Handle any errors that might've occurred when creating Drop-in
+        document.getElementById('payment-box').innerHTML = "<h1>Oops! X_x</h1><p>Something went wrong when I tried to contact our payment service. Please reload the page and try again!</p>";
+
+        console.error(err);
+        return;
+      }
+      submitButton.style.display = "block";
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        dropinInstance.requestPaymentMethod(function (err, payload) {
+          if (err) {
+            // Handle errors in requesting payment method
+            return; 
+          } 
+
+          // Send payload.nonce to our server
+          document.querySelector("#nonce").value = payload.nonce;
+          form.submit();
+        });
+      });
+    });
+  }).fail(function() {
+    document.getElementById('payment-box').innerHTML = "<h1>Oh dear! X_x</h1><p>Something went wrong when I tried to generate a payment token for our payment service. Please reload the page and try again!</p>";
+  });
+  </script>
   {% else %}
-    <h1>No Items! :(</h1>
-    <p>You haven't won any items, so I'm afraid there is nothing to show here. If you would still like to contribute, click the "Get Involved" button above, or visit our <a href="http://www.ucrpc.org/donate-2/donate/">Donation Page</a>.</p>
+    {% if items | length > 0 %}
+      <h1>Woohoo!</h1>
+      <p>You have purchased all the items you won. Doesn't that feel great?</p>
+      <p>Thank you so much for your participation. If you would like to learn about other ways you can contribute, click the "Get Involved" button above.</p>
+    {% else %}
+      <h1>No Items! :(</h1>
+      <p>You haven't won any items, so I'm afraid there is nothing to show here. If you would still like to contribute, click the "Get Involved" button above, or visit our <a href="http://www.ucrpc.org/donate-2/donate/">Donation Page</a>.</p>
+    {% endif %}
   {% endif %}
 {% endif %}
 {% endblock %}

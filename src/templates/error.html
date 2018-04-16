@@ -1,0 +1,18 @@
+{% extends "two-column.html" %}
+
+{% block left %}
+<img src="/static/img/warning.png" alt="Warning!" />
+{% endblock %}
+
+{% block right %}
+<h1>{{ heading }}</h1>
+<p>{{ msg }}</p>
+<ul>
+  {% for error in errors %}
+  <li>{{ error.code }}: {{ error.message }}</li>
+  {% endfor %}
+</ul>
+<p> You can return to the <a href="/auction">Auction Main Page</a>, the <a href="/auction/checkout">Payment Page</a>, or the <a href="/">Sign-in Page</a>.</p>
+{% endblock %}
+
+<!-- vim: set syntax=jinja: -->
