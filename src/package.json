@@ -9,16 +9,19 @@
   },
   "license": "MIT",
   "dependencies": {
+    "braintree": "~2.8.0",
+    "dotenv": "~5.0.1",
     "express": "~4.11.x",
     "kerberos": "~0.0.x",
+    "npm": "^5.8.0",
+    "nunjucks": "~3.1.0",
     "parse": "~1.8.0",
-    "parse-server": "*",
-    "braintree": "~2.8.0",
-    "dotenv": "~5.0.1"
+    "parse-server": "*"
   },
   "devDependencies": {
     "eslint": ">=4.1.1",
-    "eslint-config-google": "^0.9.1"
+    "eslint-config-google": "^0.9.1",
+    "chokidar": "~2.0.3"
   },
   "scripts": {
     "start": "node index.js"

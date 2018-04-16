@@ -1,0 +1,46 @@
+{% extends "two-column.html" %}
+
+{% block extraStylesheets %}
+<link rel="stylesheet" type="text/css" href="/static/css/checkout.css"/>
+{% endblock %}
+
+{% block left %}
+<div id="totals" class="pure-g">
+  <h1 class="totalHeader pure-u-1-2">Total</h1>
+  <h1 class="totalHeader pure-u-1-2">Due</h1>
+  <p class="pure-u-1-2">$<span>{{ totalPrice }}</span></p>
+  <p class="pure-u-1-2">$<span>{{ totalDue }}</span></p>
+</div>
+<table class="pure-table">
+  <thead>
+    <th>Purchased</th>
+    <th>Item</th>
+    <th>Price</th>
+  </thead>
+  {% set cls = cycler("","pure-table-odd") %}
+  {% for status, name, price in items %}
+  <tr class="{{ cls.next() }}">
+    <td class="status-column">{{ status }}</td>
+    <td>{{ name }}</td>
+    <td>$ {{ price }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
+
+{% block right %}
+{% if totalDue > 0 %}
+
+{% else %}
+  {% if items | length > 0 %}
+    <h1>Woohoo!</h1>
+    <p>You have purchased all the items you won. Doesn't that feel great?</p>
+    <p>Thank you so much for your participation. If you would like to learn about other ways you can contribute, click the "Get Involved" button above.</p>
+  {% else %}
+    <h1>No Items! :(</h1>
+    <p>You haven't won any items, so I'm afraid there is nothing to show here. If you would still like to contribute, click the "Get Involved" button above, or visit our <a href="http://www.ucrpc.org/donate-2/donate/">Donation Page</a>.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}
+
+<!-- vim: set syntax=jinja: -->

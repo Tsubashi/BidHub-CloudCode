@@ -5,13 +5,18 @@ console.log('Setting up Server...');
 require('dotenv').config();
 let express = require('express');
 let path = require('path');
+let nunjucks = require('nunjucks');
 let app = express();
+if (process.env.NODE_ENV == 'Production') {
+  nunjucks.configure('templates', {express: app});
+} else {
+  nunjucks.configure('templates', {watch: true, noCache: true, express: app});
+}
 
 // ////////////////
 // ROUTES
 
 console.log('. Adding Static Routes');
-// Serve static assets from the /static folder
 app.use('/static', express.static(path.join(__dirname, '/static')));
 
 // Root page gets special treatment
@@ -20,12 +25,13 @@ app.get('/', function(req, res) {
 });
 
 console.log('. Adding Payment Routes');
-// Add Braintree Routes to the /payment prefix
 app.use('/payment', require('./routes/braintree.js'));
 
 console.log('. Adding Parse Routes');
-// Serve the Parse API on the /parse URL prefix
 app.use('/parse', require('./routes/parse.js'));
+
+console.log('. Adding Web Routes');
+app.use('/auction', require('./routes/webapp.js'));
 
 // ////////////////
 // RUN SERVER
