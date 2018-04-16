@@ -174,14 +174,20 @@ header .social li:first-child{
 
 /*		Hero section 		*/
 
+
 .hero{
 	display: block;
 	position: relative;
 	width: 100%;
 	height: 560px;
-	background: url('../img/hero.png') no-repeat fixed center center #000;
-	background-size: cover;
+	background: url('../img/hero.jpg') no-repeat fixed center center #000;
+  background-size: cover;
 	/* opacity: 0.4; */
+}
+@media (max-width: 480px) {
+  .hero{
+    background-size: auto 50%;
+  }
 }
 
 .hero .caption{
@@ -492,7 +498,7 @@ a.app_link{
 /*		Footer 		*/
 
 footer{
-	padding: 100px 0;
+	padding: 50px 0;
 	text-align: center;
 }
 
@@ -505,7 +511,6 @@ footer .app_platform li:first-child{
 }
 
 footer .copyright{
-	margin-top: 60px;
 	color: #757171;
 	font-family: "open_regular", Helvetica, Arial, sans-serif;
 	font-size: 12px;

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<!--  App Title  -->
+  <title>UCRPC Auction - {{ title }}</title>
+	<!--  App Description  -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+
+	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css"/>
+	<link rel="stylesheet" type="text/css" href="/static/css/animate.css"/>
+	<link rel="stylesheet" type="text/css" href="/static/css/main.css"/>
+  {% block extraStylesheets %}
+  {% endblock %}
+
+	
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+	<script type="text/javascript" src="/static/js/parallax.js"></script>
+	<script type="text/javascript" src="/static/js/nicescroll.js"></script>
+	<script type="text/javascript" src="/static/js/main.js"></script>
+</head>
+<body>
+	
+	<!--  Header Section  -->
+	<header>
+		<div class="container">
+			<div class="logo pull-left animated wow fadeInLeft">
+				<a href="http://www.ucrpc.org/"><img src="/static/img/logo.png" alt="" title=""></a>
+			</div>
+
+			
+			<nav class="pull-left">
+				<ul class="list-unstyled">
+					<li class="animated wow fadeInLeft" data-wow-delay="0s"><a href="http://auction.ucrpc.org/auction/">Auction</a></li>
+					<li class="animated wow fadeInLeft" data-wow-delay=".1s"><a href="http://www.ucrpc.org/about-us/">About</a></li>
+					<li class="animated wow fadeInLeft" data-wow-delay=".2s"><a href="http://www.ucrpc.org/host-a-family/">Get Involved</a></li>
+				</ul>
+			</nav>
+
+			<span class="burger_icon">menu</span>
+		</div>
+	</header>
+	<!--  End Header Section  -->
+
+  {% block sections %}
+  {% endblock %}
+
+	<!--  Footer Section  -->
+	<footer>
+		<p class="copyright animated wow fadeIn" data-wow-duration="2s">© 2018 <a href="http://www.ucrpc.org" target="_blank"><strong>Utah Community &amp; Refugee Partnership Center</strong></a>. All Rights Reserved</p>
+	</footer>
+	<!--  End Footer Section  -->
+
+
+</body>
+</html>
+
+<!-- vim: set syntax=jinja: -->

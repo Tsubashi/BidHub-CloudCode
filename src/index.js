@@ -21,7 +21,7 @@ app.use('/static', express.static(path.join(__dirname, '/static')));
 
 // Root page gets special treatment
 app.get('/', function(req, res) {
-  res.sendFile('index.html', {root: path.join(__dirname, '/static')});
+  res.render('index.html', {title: 'Home'});
 });
 
 console.log('. Adding Payment Routes');
