@@ -42,24 +42,57 @@ router.get('/checkout', function(req, res) {
 
 router.post('/checkout', function(req, res) {
   let clientNonce = req.body.payment_method_nonce;
-  gateway.transaction.sale({
-    amount: '10.00',
-    paymentMethodNonce: clientNonce,
-    options: {
-      submitForSettlement: true,
-    },
-  }, function(err, result) {
-    if (result.success || result.transaction) {
-      res.redirect('/auction/checkout?txid=' + result.transaction.id);
-    } else {
-      transactionErrors = result.errors.deepErrors();
-      res.render('error.html', {
-        title: 'Transaction Error',
-        heading: 'Woah There!',
-        msg: 'Something has gone terribly wrong in processing your payment.',
-        errors: transactionErrors,
+  let email = req.body.usermail;
+  let itemQuery = new Parse.Query('Item');
+  itemQuery.equalTo('currentWinners', email);
+
+  itemQuery.find({
+    success: function(itemsWon) {
+      console.log('email: ' + email);
+      let totalDue = 0;
+      itemsWon.forEach(function(item) {
+        console.log('Processing: ' + item.get('name'));
+        if (!item.get('paidFor')) {
+          totalDue += item.get('price');
+        }
       });
-    }
+      console.log('Due: ' + totalDue + ' Expected: ' + res.body.total);
+
+      if (totalDue != res.body.total) {
+        res.render('error.html', {
+          title: 'Mismatched Total',
+          heading: 'That doesn\'t look right...',
+          msg: 'The total amount due changed between this page and the last. '
+             + 'Maybe you won another item? Go back to the payment page to '
+             + 'check.',
+          errors: ['Total amount charged: ' + totalDue,
+                   'Total expected: ' + res.body.total,
+                  ],
+        });
+      }
+
+      gateway.transaction.sale({
+        amount: totalDue,
+        paymentMethodNonce: clientNonce,
+        options: {
+          submitForSettlement: true,
+        },
+      }, function(err, result) {
+        if (result.success || result.transaction) {
+          res.redirect('/auction/checkout?txid=' + result.transaction.id);
+        } else {
+          transactionErrors = result.errors.deepErrors();
+          res.render('error.html', {
+            title: 'Transaction Error',
+            heading: 'Woah There!',
+            msg: 'Something has gone terribly wrong in processing your '
+               + 'payment.',
+            errors: transactionErrors,
+          });
+        }
+      });
+    },
+    // TODO: Handle Error
   });
 });
 

@@ -272,7 +272,7 @@ Parse.Cloud.job("InitializeForAuction", function(request, status) {
 	item.set("donorname", "Generous Donor");
 	item.set("price", 50);
     item.set("priceIncrement", 1);
-	item.set("imageurl", "https://ucrpc.aquaveo.com/TestObject7.jpg");
+	item.set("imageurl", "https://auction.ucrpc.com/TestObject7.jpg");
 	item.set("qty", "1");
 	item.set("fmv", "500");
 	item.set("", "");
@@ -283,6 +283,7 @@ Parse.Cloud.job("InitializeForAuction", function(request, status) {
 	item.set("previousWinners", [])
 	item.set("opentime", new Date("Dec 05, 2014, 05:00"));
 	item.set("closetime", new Date("Dec 06, 2020, 05:00"));
+  item.set("paidFor", false);
 	item.save(null, {
 		success: function(item) {
 			var NewBid = Parse.Object.extend("NewBid"); 

@@ -24,14 +24,54 @@ app.use('/static', express.static(path.join(__dirname, '/static')));
 
 // Root page gets special treatment
 app.get('/', function(req, res) {
-  res.render('index.html', {title: 'Home'});
+  res.render('index.html', {
+    title: 'Home',
+  });
+});
+
+// ...so does the rules page
+app.get('/rules.html', function(req, res) {
+  res.render('rules.html', {
+    title: 'Rules',
+  });
+});
+
+console.log('. Adding Parse Routes');
+app.use('/parse', require('./routes/parse.js'));
+
+console.log('. Adding Login Middleware');
+app.use(function(req, res, next) {
+  let currentUser = Parse.User.current();
+  // If the user is coming from the app, they will set the 'user' GET parameter.
+  // Use this parameter to log them on here too.
+  //
+  // Yes, this is a sub-optimal hack, and should be replaced in future versions.
+  // It exists because I had to ship the iOS app through App Store Reviews
+  // before I really understood how Parse worked.
+  // - cscott (18 April 2018)
+  if (req.query.hasOwnProperty('user')) {
+    Parse.User.logIn(req.query.user, 'test', {
+      success: next(),
+      error: function(user, err) {
+        res.render('error.html', {
+          title: 'Login Error',
+          heading: 'Shucks, Login failed.',
+          msg: 'I tried to pull up your account, but something happened.',
+          errors: err,
+        });
+      },
+    });
+  } else {
+    if (currentUser) {
+      next();
+    } else {
+      res.redirect('/#sign_in');
+    }
+  }
 });
 
 console.log('. Adding Payment Routes');
 app.use('/payment', require('./routes/braintree.js'));
-
-console.log('. Adding Parse Routes');
-app.use('/parse', require('./routes/parse.js'));
 
 console.log('. Adding Web Routes');
 app.use('/auction', require('./routes/webapp.js'));
