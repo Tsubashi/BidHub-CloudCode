@@ -36,6 +36,26 @@ app.use('/parse', require('./routes/parse.js'));
 console.log('. Adding Web Routes');
 app.use('/auction', require('./routes/webapp.js'));
 
+console.log('. Adding Error Pages'); // These must come last
+app.use(function(req, res, next) {
+  res.status(404).render('error.html', {
+    title: 'Page Not Found',
+    heading: 'What Page? Where?',
+    msg: 'I cannot find the page you asked for. It is just not here!',
+  });
+});
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).render('error.html', {
+    title: 'Error (500)',
+    heading: 'Zoinks!',
+    msg: 'If everything had gone right, you wouldn\'t be here, but '
+       + 'It seems I made a mistake somewhere. I\'m '
+       + 'dreadfully sorry, but could you go back and try it again?',
+  });
+});
+
+
 // ////////////////
 // RUN SERVER
 
