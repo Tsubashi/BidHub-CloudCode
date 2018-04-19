@@ -1,0 +1,16 @@
+{% extends "two-column.html" %}
+
+{% block extraJS %}
+<meta http-equiv="refresh" content="3;{{ redirect }}" />
+{% endblock %}
+
+{% block left %}
+<img src="/static/img/warning.png" alt="Warning!" />
+{% endblock %}
+
+{% block right %}
+<h1>Hey, you are not logged in!</h1>
+<p>The page you are trying to access requires you to be logged in. I'll redirect you in a moment.</p>
+{% endblock %}
+
+<!-- vim: set syntax=jinja: -->

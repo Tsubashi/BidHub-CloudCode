@@ -3,8 +3,23 @@ let router = express.Router(); // eslint-disable-line new-cap
 
 // ////////////////
 // ROUTES
+router.get('/logout', function(req, res) {
+  Parse.User.enableUnsafeCurrentUser();
+  let currentUser = Parse.User.current();
+  if (currentUser) {
+    Parse.User.logOut().then(() => {
+      res.redirect('/');
+    });
+  } else {
+    res.redirect('/');
+  }
+});
+
 router.get('/login', function(req, res) {
-  res.redirect('/#sign-in');
+  res.render('signin-required.html', {
+    title: 'Login Required',
+    redirect: '/?nextUrl=' + req.query.nextUrl + '#sign_in',
+  });
 });
 
 router.post('/login', function(req, res) {
@@ -19,9 +34,8 @@ router.post('/login', function(req, res) {
   }
   Parse.User.logIn(email, 'test', {
     success: function(user) {
-      nextUrl = decodeURIComponent(res.body.nextUrl);
+      nextUrl = decodeURIComponent(req.body.nextUrl);
       if (nextUrl) {
-        console.log('Heading to ' + nextUrl);
         res.redirect(nextUrl);
       } else {
         res.redirect('/auction');
@@ -29,17 +43,18 @@ router.post('/login', function(req, res) {
     },
     error: function(user, err) {
       if (err.code == 101) {
-        user = new Parse.User();
+        let user = new Parse.User();
         user.set('username', email);
         user.set('password', 'test');
         user.set('email', email);
-        user.set('fullname', res.body.name);
-        user.set('telephone', res.body.phone);
+        user.set('fullname', req.body.name);
+        user.set('telephone', req.body.phone);
 
         user.signUp(null, {
           success: function(user) {
             // Have the user try logging in again
             res.redirect(307, req.originalUrl);
+            return;
           },
           error: function(user, error) {
             res.render('error.html', {
@@ -49,6 +64,7 @@ router.post('/login', function(req, res) {
                  + 'something awful happened!',
               errors: [err],
             });
+            return;
           },
         });
       }

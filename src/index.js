@@ -41,13 +41,13 @@ app.use('/parse', require('./routes/parse.js'));
 
 console.log('. Adding Login Middleware');
 app.use('/user', require('./routes/login.js'));
-app.use(require('./middleware/ensureLogin.js'));
+let ensureLogin = require('./middleware/ensureLogin.js');
 
 console.log('. Adding Payment Routes');
-app.use('/payment', require('./routes/braintree.js'));
+app.use('/payment', ensureLogin, require('./routes/braintree.js'));
 
 console.log('. Adding Web Routes');
-app.use('/auction', require('./routes/webapp.js'));
+app.use('/auction', ensureLogin, require('./routes/webapp.js'));
 
 console.log('. Adding Error Pages'); // These must come last
 app.use(function(req, res, next) {

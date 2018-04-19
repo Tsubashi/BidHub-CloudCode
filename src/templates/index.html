@@ -24,11 +24,12 @@
 					<i class="iphone_icon"></i>
 					<span>iPhone App</span>
 				</a>
-
+<!--
 				<a href="#hero" class="app_store_btn text-uppercase animated wow fadeInLeft">
 					<i class="android_icon"></i>
 					<span>Android App</span>
 				</a>
+-->
 			</div>			
 		</div>
 	</section>
@@ -44,7 +45,7 @@
 						<img src="/static/img/iphone.png" alt="Image of iPhone App">
 					</div>
 				</div>
-				<div class="col-md-6 animated wow fadeInRight">
+				<div id="sign_in_form" class="col-md-6 animated wow fadeInRight">
 					<form class="sign_in_form pure-form pure-form-aligned" method="POST" action="/user/login">
                         <input id="nextUrl" type="hidden" name="nextUrl" value="{{ nextUrl }}"></input>
 						<h1 class="text-uppercase">Sign In.</h1>

@@ -20,7 +20,11 @@ let gateway = braintree.connect({
 // ROUTES
 router.get('/client_token', function(req, res) {
   gateway.clientToken.generate({}, function(err, response) {
-    res.send(response.clientToken);
+    if (err) {
+        res.send(500);
+    } else {
+        res.send(response.clientToken);
+    }
   });
 });
 

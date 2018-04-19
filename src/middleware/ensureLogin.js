@@ -18,7 +18,6 @@ function ensureLogin(req, res, next) {
   if (req.query.hasOwnProperty('user')) {
     Parse.User.logIn(req.query.user, 'test', {
       success: function(user) {
-        console.log('Handoff Complete');
         next();
       },
       error: function(user, err) {
@@ -34,11 +33,12 @@ function ensureLogin(req, res, next) {
     });
   } else {
     if (currentUser) {
-      console.log('Already Logged in');
       next();
+      return;
     } else {
-      res.redirect('/?nextUrl=' + encodeURIComponent(req.originalUrl)
-                  +'#sign_in');
+      res.redirect('/user/login?nextUrl=' + encodeURIComponent(req.originalUrl)
+                  );
+      return;
     }
   }
 }
