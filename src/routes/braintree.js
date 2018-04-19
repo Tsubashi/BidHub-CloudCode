@@ -25,24 +25,21 @@ router.get('/client_token', function(req, res) {
 });
 
 router.get('/checkout', function(req, res) {
-  let error = {
-    code: -2,
-    message: 'No Payment Data',
-  };
   res.render('error.html', {
-    title: 'Error',
+    title: 'No Payment Data',
     heading: 'Wait a second...',
     msg: 'It looks like you came here without any payment data. This can '
        + 'happen if you manually navigate to this page, rather that get '
        + 'here by submitting the form. Head back to the payment page to '
        + 'enter your payment details.',
-    errors: error,
   });
 });
 
 router.post('/checkout', function(req, res) {
+  Parse.User.enableUnsafeCurrentUser();
+  user = Parse.User.current();
+  let email = user.get('email');
   let clientNonce = req.body.payment_method_nonce;
-  let email = req.body.usermail;
   let itemQuery = new Parse.Query('Item');
   itemQuery.equalTo('currentWinners', email);
 
