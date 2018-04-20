@@ -46,10 +46,11 @@
   text-align: right;
   display: block;
 }
-.item-fmv {
+.item-time, .item-fmv {
   color: #CCC;
   font-size: .75em;
   display: block;
+  margin: 5px 0;
 }
 .item-bidBtn {
   float: right;
@@ -76,8 +77,10 @@
           </div>
         </div>
         <div class="item-desc">
+          {% if item.isBiddable %}
           <a class="item-bidBtn">Bid Now</a>
-          <span class="item-time">{{ timeMsg }}</span>
+          {% endif %}
+          <span class="item-time">{{ item.timeMsg }}</span>
           <span class="item-fmv">Fair Market Value: {{ item.get('fmv') }}</span>
           <p class="item-desc">{{ item.get('description') }}</p>
         </div>

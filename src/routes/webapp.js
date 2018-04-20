@@ -1,5 +1,6 @@
 let express = require('express');
 let router = express.Router(); // eslint-disable-line new-cap
+let moment = require('moment');
 
 // ////////////////
 // ROUTES
@@ -9,10 +10,26 @@ router.get('/', function(req, res) {
   let itemQuery = new Parse.Query('Item');
   itemQuery.find({
     success: function(list) {
+      list.forEach(function(item, index, items) {
+        opentime = item.get('opentime');
+        closetime = item.get('closetime');
+        items[index].isBiddable = false;
+        if (moment(opentime).isAfter()) {
+          items[index].timeMsg = 'Bidding opens in '
+                               + moment(opentime).fromNow();
+        } else if (moment(closetime).isAfter()) {
+          items[index].timeMsg = 'Bidding closes in '
+                               + moment(closetime).fromNow();
+          items[index].isBiddable = true;
+        } else {
+          items[index].timeMsg = 'Bidding closed '
+                               + moment(closetime).fromNow();
+        }
+      });
       res.render('auction.html', {
         title: 'Main Auction',
         username: user.get('fullname'),
-        items: items,
+        items: list,
       });
     },
     error: function(err) {
