@@ -195,12 +195,6 @@ header .social li:first-child{
 	height: 560px;
 	background: url('../img/hero.jpg') no-repeat fixed center center #000;
   background-size: cover;
-	/* opacity: 0.4; */
-}
-@media (max-width: 480px) {
-  .hero{
-    background-size: auto 50%;
-  }
 }
 
 .hero .caption{
@@ -326,7 +320,7 @@ a.app_link{
 /*		Sign-in section 		*/
 
 .main{
-	padding: 100px 0;
+	padding: 50px 0;
 }
 
 .main .iphone{

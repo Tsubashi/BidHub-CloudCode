@@ -36,14 +36,11 @@
 				<ul class="list-unstyled">
 					<li class="animated wow fadeInLeft" data-wow-delay="0s"><a href="/auction">Auction</a></li>
 					<li class="animated wow fadeInLeft" data-wow-delay=".1s"><a href="http://www.ucrpc.org/about-us/">About</a></li>
-					<li class="animated wow fadeInLeft" data-wow-delay=".2s"><a href="http://www.ucrpc.org/host-a-family/">Get Involved</a></li>
 					<li class="animated wow fadeInLeft" data-wow-delay=".3s"><a href="http://www.ucrpc.org/donate-2/donate/">Donate</a></li>
+          {% if username %}
+					<li class="animated wow fadeInLeft" data-wow-delay=".4s"><a href="/user/logout">Log Out</a></li>
+          {% endif %}
 				</ul>
-        {% if username %}
-        <div class="logout">
-          <span>Welcome, {{ username }}!<span><a href="/user/logout">Log Out</a>
-        </div>
-        {% endif %}
 			</nav>
 
 			<span class="burger_icon">menu</span>
