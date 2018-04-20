@@ -18,7 +18,7 @@ router.get('/logout', function(req, res) {
 router.get('/login', function(req, res) {
   res.render('signin-required.html', {
     title: 'Login Required',
-    redirect: '/?nextUrl=' + req.query.nextUrl + '#sign_in',
+    redirect: '/?nextUrl=' + req.query.nextUrl + '#sign_in_form',
   });
 });
 
