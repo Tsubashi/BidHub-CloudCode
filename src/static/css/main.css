@@ -325,27 +325,27 @@ a.app_link{
 
 /*		Sign-in section 		*/
 
-.sign_in{
+.main{
 	padding: 100px 0;
 }
 
-.sign_in .iphone{
+.main .iphone{
 	max-width: 339px;
 	position: relative;
 	display: inline-block;
 	text-align: center;
 }
 
-.sign_in .iphone img{
+.main .iphone img{
 	width: 100%;
 	height: auto;
 }
 
-.sign_in .sign_in_form{
+.main .sign_in_form{
 	margin-left: 50px;
 }
 
-.sign_in .sign_in_form h1{
+.main .sign_in_form h1{
 	color: #525151;
 	font-family: "open_bold", Helvetica, Arial, sans-serif;
 	font-size: 34px;
@@ -355,7 +355,7 @@ a.app_link{
 	word-break: break-word;
 }
 
-.sign_in .sign_in_form p{
+.main .sign_in_form p{
 	color: #767272;
 	font-family: "open_regular", Helvetica, Arial, sans-serif;
 	font-size: 16px;
@@ -363,11 +363,11 @@ a.app_link{
 	line-height: 32px;
 }
 
-.sign_in .sign_in_form ul{
+.main .sign_in_form ul{
 	margin-bottom: 30px;
 }
 
-.sign_in .sign_in_form ul li{
+.main .sign_in_form ul li{
 	display: block;
 	position: relative;
 	color: #6c6c6c;
@@ -382,22 +382,22 @@ a.app_link{
 	-webkit-transition: all .2s linear;
 }
 
-.sign_in .email_icon{	
+.main .email_icon{	
 	background: url('../img/email_icon.png') no-repeat;
 	background-position: 0 10px; 
 }
 
-.sign_in .phone_icon{	
+.main .phone_icon{	
 	background: url('../img/phone_icon.png') no-repeat;
 	background-position: 0 5px; 
 }
 
-.sign_in .name_icon{
+.main .name_icon{
 	background: url('../img/name_icon.png') no-repeat;
 	background-position: 0px 5px;
 }
 
-.sign_in .sign_in_form ul li span{
+.main .sign_in_form ul li span{
 	display: inline-block;
 }
 
@@ -636,18 +636,18 @@ footer .copyright a{
 
 
 	/*		About Section 		*/
-	.sign_in .features_list {
+	.main .features_list {
 		text-align: center;
 		margin: 0;
 	}
 
-	.sign_in .features_list ul li{
+	.main .features_list ul li{
 		text-indent: 0;
 		background: transparent!important;
 		margin-bottom: 20px;
 	}
 
-	.sign_in .features_list ul li:last-child{
+	.main .features_list ul li:last-child{
 		margin: 0;
 	}
 

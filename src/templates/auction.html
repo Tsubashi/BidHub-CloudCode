@@ -1,0 +1,91 @@
+{% extends 'main.html' %}
+
+{% block extraCSS %}
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-old-ie-min.css">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
+<!--<![endif]-->
+<style>
+.main {
+  background-color: #6f7179;
+}
+.item-container {
+  margin-bottom: 10px;
+}
+.item-card {
+  background-color: white;
+  border: 1px solid #004474;
+  border-radius: 4px;
+  box-shadow: 2px 4px #0044747A;
+  padding: 0;
+  margin: 5px;
+  box-sizing: border-box;
+  height: 100%;
+}
+.item-img {
+  border-radius: 4px 4px 0 0;
+}
+.item-header {
+  background-color: #393939;
+  color: white;
+  padding: 10px 5px;
+}
+.item-name {
+  font-size: 1.25em;
+  padding: 10px 2px;
+}
+.item-price {
+  font-size: 1.25em;
+  text-align: right;
+  display: block;
+}
+.item-bids {
+  color: #CCC;
+  text-align: right;
+  display: block;
+}
+.item-fmv {
+  color: #CCC;
+  font-size: .75em;
+  display: block;
+}
+.item-bidBtn {
+  float: right;
+}
+.item-desc {
+  padding: 10px 5px;
+  margin: 0;
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="pure-g">
+  {% for item in items %}
+  <div class="item-container pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4">
+    <div class="item-card">
+      <img class="item-img pure-img" src="{{ item.get('imageurl') }}" alt="Image of {{ item.get('name') }}" />
+      <div class="item-text">
+        <div class="item-header pure-g">
+          <span class="item-name pure-u-4-5">{{ item.get('name') }}</span>
+          <div class="pure-u-1-5">
+            <span class="item-price">${{ item.get('price') }}</span>
+            <span class="item-bids">{{ item.get('numberOfBids') }} Bid{% if item.get('numberOfBids') != 1 %}s{% endif %}</span>
+          </div>
+        </div>
+        <div class="item-desc">
+          <a class="item-bidBtn">Bid Now</a>
+          <span class="item-time">{{ timeMsg }}</span>
+          <span class="item-fmv">Fair Market Value: {{ item.get('fmv') }}</span>
+          <p class="item-desc">{{ item.get('description') }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+<!-- vim :set syntax=jinja: -->

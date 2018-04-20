@@ -3,6 +3,32 @@ let router = express.Router(); // eslint-disable-line new-cap
 
 // ////////////////
 // ROUTES
+router.get('/', function(req, res) {
+  Parse.User.enableUnsafeCurrentUser();
+  let user = Parse.User.current();
+  let itemQuery = new Parse.Query('Item');
+  itemQuery.find({
+    success: function(list) {
+      res.render('auction.html', {
+        title: 'Main Auction',
+        username: user.get('fullname'),
+        items: items,
+      });
+    },
+    error: function(err) {
+      res.render('error.html', {
+        title: 'No Items!',
+        heading: 'Awwwww, No items found!',
+        msg: 'When I went to look for items, I could not find any! This could '
+           + 'be a database issue, or a fluke. Try reloading the page, and if '
+           + 'the problem persists, find an administrator and show them the '
+           + 'following:',
+        errors: err,
+      });
+    },
+  });
+});
+
 router.get('/checkout', function(req, res) {
   Parse.User.enableUnsafeCurrentUser();
   let user = Parse.User.current();
@@ -20,7 +46,7 @@ router.get('/checkout', function(req, res) {
   let email = user.get('email');
   let itemQuery = new Parse.Query('Item');
   itemQuery.equalTo('currentWinners', email);
-  // itemQuery.greaterThan('closetime', now);
+  // TODO: itemQuery.greaterThan('closetime', now);
 
   itemQuery.find({
     success: function(itemsWon) {

@@ -61,7 +61,7 @@ app.use(function(err, req, res, next) {
   console.error(err.stack);
   res.status(500).render('error.html', {
     title: 'Error (500)',
-    heading: 'Zoinks!',
+    heading: 'Gadzooks! An wild Error appeared!',
     msg: 'If everything had gone right, you wouldn\'t be here, but '
        + 'It seems I made a mistake somewhere. I\'m '
        + 'dreadfully sorry, but could you go back and try it again?'
