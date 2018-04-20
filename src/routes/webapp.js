@@ -46,6 +46,21 @@ router.get('/', function(req, res) {
   });
 });
 
+router.get('/placeBid', function(req, res) {
+  let itemId = req.query.id;
+  if (!itemId) {
+    res.render('error.html', {
+      title: 'Bidding Error',
+      heading: 'Oi! No item ID specified',
+      msg: 'It looks like you are missing the item ID, so I cannot tell which '
+         + 'item you are bidding on. Please go back and try again',
+    });
+    return;
+  }
+  itemId = decodeURIComponent(itemId);
+  res.render('bid.html');
+});
+
 router.get('/checkout', function(req, res) {
   Parse.User.enableUnsafeCurrentUser();
   let user = Parse.User.current();

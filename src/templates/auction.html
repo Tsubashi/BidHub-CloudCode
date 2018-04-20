@@ -7,6 +7,7 @@
 <!--[if gt IE 8]><!-->
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
 <!--<![endif]-->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css" />
 <style>
 .main {
   background-color: #6f7179;
@@ -54,15 +55,86 @@
 }
 .item-bidBtn {
   float: right;
+	transition: all .2s linear;
+  border: 1px solid #004474;
+  border-radius: 4px;
+  color: #004474;
+  padding: 2px 5px;
+}
+.item-bidBtn:hover,
+.item-bidBtn:focus{
+	text-decoration: none;
+	color: white!important;
+  border-color: #004474;
+  background-color: #004474;
+  cursor: pointer;
+}
+.ui-widget-overlay {
+   background-color: #AAA;
+   opacity: .70;
+   filter: Alpha(Opacity=30);
+}
+.ui-dialog-titlebar {
+  border: none;
+  background: none;
+  border-bottom: 1px solid #CCC;
+  border-radius: 0;
 }
 .item-desc {
   padding: 10px 5px;
   margin: 0;
 }
+.bid-grid {
+  text-align: center;
+}
+.bid-amount {
+  color: #004474;
+  font-size: 1.25em;
+  cursor: pointer;
+	transition: all .2s linear;
+}
+.bid-amount:hover,
+.bid-amount:focus, {
+  color: #005585;
+}
 </style>
 {% endblock %}
 
+{% block extraJS %}
+  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+  <script>
+    function showBidDlg(itemName, itemId) {
+      dlg = $('#bidDialog');
+      dlg.html('<div class="loader" style="margin: 0 auto"></div>');
+      dlg.dialog({
+        modal: true,
+        closeOnEscape: true,
+        width: '75%',
+        show: { effect: "scale", duration: 200 },
+        hide: { effect: "scale", duration: 200 },
+        create: function(event, ui) {
+          $(this).parent().css("max-width", "500px");
+        }
+      }); 
+      dlg.dialog('open'); 
+      dlg.load('auction/placeBid?id=' + encodeURIComponent(itemId), 
+        function(response, status, xhr) {
+          if (status === "error") {
+            dlg.dialog( "option", "title", "Error" );
+            var msg = "While trying to open the bidding interface, I ran into an error: ";
+            dlg.html( msg + xhr.status + " " + xhr.statusText );
+          } else {
+            dlg.dialog( "option", "title", itemName );
+          }
+          dlg.dialog( "option", "position", { my: "center", at: "center", of: window } );
+        }
+      );
+    }
+  </script>
+{% endblock %}
+
 {% block main %}
+<div id="bidDialog"></div>
 <div class="pure-g">
   {% for item in items %}
   <div class="item-container pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4">
@@ -78,7 +150,7 @@
         </div>
         <div class="item-desc">
           {% if item.isBiddable %}
-          <a class="item-bidBtn">Bid Now</a>
+          <span class="item-bidBtn" onclick="showBidDlg('{{ item.get('name') }}', '{{ item.id }}')">Bid Now</span>
           {% endif %}
           <span class="item-time">{{ item.timeMsg }}</span>
           <span class="item-fmv">Fair Market Value: {{ item.get('fmv') }}</span>
