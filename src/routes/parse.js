@@ -16,8 +16,12 @@ let parseConfig = {
     options: {
       apiKey: process.env.MAILGUN_API_KEY || '',
       domain: process.env.MAILGUN_DOMAIN || 'localhost',
-      fromAddress: process.env.MAILGUN_FROM_ADDRESS || 'auctionmaster',
+      fromAddress: process.env.MAILGUN_FROM_ADDRESS ||
+        'auctionmaster@localhost',
     },
+  },
+  customPages: {
+    verifyEmailSuccess: '/user/email-verified',
   },
 };
 let pushConfig = {};

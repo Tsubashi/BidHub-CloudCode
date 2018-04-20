@@ -67,15 +67,20 @@ router.post('/login', function(req, res) {
             return;
           },
         });
+      } else {
+        res.render('error.html', {
+          title: 'Login Error',
+          heading: 'Aw shucks, Login failed.',
+          msg: 'I tried to pull up your account, but something happened.',
+          errors: [err],
+        });
       }
-      res.render('error.html', {
-        title: 'Login Error',
-        heading: 'Aw shucks, Login failed.',
-        msg: 'I tried to pull up your account, but something happened.',
-        errors: [err],
-      });
     },
   });
+});
+
+router.get('/email-verified', function(req, res) {
+  res.render('email-verified.html');
 });
 
 module.exports = router;
