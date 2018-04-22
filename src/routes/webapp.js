@@ -49,16 +49,35 @@ router.get('/', function(req, res) {
 router.get('/placeBid', function(req, res) {
   let itemId = req.query.id;
   if (!itemId) {
-    res.render('error.html', {
-      title: 'Bidding Error',
-      heading: 'Oi! No item ID specified',
-      msg: 'It looks like you are missing the item ID, so I cannot tell which '
-         + 'item you are bidding on. Please go back and try again',
-    });
+    res.send(404, 'It looks like you are missing the item ID, so I cannot '
+                + 'tell which item you are bidding on. Please go back and '
+                + 'try again');
     return;
   }
   itemId = decodeURIComponent(itemId);
-  res.render('bid.html');
+  console.log(itemId);
+  let itemQuery = new Parse.Query('Item');
+  itemQuery.equalTo('id', itemId);
+  itemQuery.first({
+    success: function(item) {
+      if (item) {
+        console.log('--');
+        console.log('Found ' + item.get('name'));
+        res.render('bid.html', {
+          price: item.get('price'),
+          inc: item.get('increment'),
+        });
+        return;
+      } else {
+        res.status(404).send('No item found');
+      }
+    },
+    error: function(err) {
+      res.status(500).send('Query Failed');
+      return;
+    },
+  });
+  res.status(502).send('Invalid');
 });
 
 router.get('/checkout', function(req, res) {

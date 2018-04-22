@@ -16,10 +16,9 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/login', function(req, res) {
-  res.render('signin-required.html', {
-    title: 'Login Required',
-    redirect: '/?nextUrl=' + req.query.nextUrl + '#sign_in_form',
-  });
+  errorMsg = encodeURIComponent('You are not logged in!');
+  res.redirect('/?nextUrl=' + req.query.nextUrl + '&error=' + errorMsg
+              + '#sign_in_form');
 });
 
 router.post('/login', function(req, res) {

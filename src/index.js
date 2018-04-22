@@ -25,6 +25,7 @@ app.use('/static', express.static(path.join(__dirname, '/static')));
 app.get('/', function(req, res) {
   res.render('index.html', {
     title: 'Home',
+    error: req.query.error ? req.query.error : '',
     nextUrl: req.query.nextUrl ? req.query.nextUrl : '',
   });
 });
@@ -38,6 +39,18 @@ app.get('/rules.html', function(req, res) {
 
 console.log('. Adding Parse Routes');
 app.use('/parse', require('./routes/parse.js'));
+app.get('/user/login_status', function(req, res) {
+  Parse.User.enableUnsafeCurrentUser();
+  let currentUser = Parse.User.current();
+  if (currentUser) {
+    res.status(200).send('Logged In');
+    return;
+  } else {
+    res.status(403).send('Not Logged In');
+    return;
+  }
+  res.status(500).send('I don\'t even know.');
+});
 
 console.log('. Adding Login Middleware');
 app.use('/user', require('./routes/login.js'));

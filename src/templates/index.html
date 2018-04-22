@@ -11,6 +11,14 @@
   </script>
 {% endblock %}
 
+{% block extraCSS %}
+<style>
+#error-box {
+  color: red;
+}
+</style>
+{% endblock %}
+
 {% block sections %}
 	<!--  About Section  -->
 	<section class="hero" id="hero">
@@ -46,6 +54,7 @@
 					</div>
 				</div>
 				<div id="sign_in_form" class="col-md-6 animated wow fadeInRight">
+          <div id="error-box"><span>{{ error }}</span></div>
 					<form class="sign_in_form pure-form pure-form-aligned" method="POST" action="/user/login">
                         <input id="nextUrl" type="hidden" name="nextUrl" value="{{ nextUrl }}"></input>
 						<h1 class="text-uppercase">Sign In.</h1>

@@ -87,6 +87,9 @@
 .bid-grid {
   text-align: center;
 }
+.bid-label {
+  display: block;
+}
 .bid-amount {
   color: #004474;
   font-size: 1.25em;
@@ -104,6 +107,13 @@
   <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
   <script>
     function showBidDlg(itemName, itemId) {
+      $.get('/user/login_status', function(data, status, xhr) {
+        showBidDlg_(itemName, itemId);
+      }).fail(function() {
+        window.location.replace('/user/login?nextUrl='+ encodeURIComponent('/auction'));
+      });
+    }
+    function showBidDlg_(itemName, itemId) {
       dlg = $('#bidDialog');
       dlg.html('<div class="loader" style="margin: 0 auto"></div>');
       dlg.dialog({
@@ -122,7 +132,7 @@
           if (status === "error") {
             dlg.dialog( "option", "title", "Error" );
             var msg = "While trying to open the bidding interface, I ran into an error: ";
-            dlg.html( msg + xhr.status + " " + xhr.statusText );
+            dlg.html( msg + xhr.status + ": " + response );
           } else {
             dlg.dialog( "option", "title", itemName );
           }
