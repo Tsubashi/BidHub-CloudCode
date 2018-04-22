@@ -3,6 +3,8 @@
 
 import csv
 import dateutil.parser
+import string
+import random
 from datetime import datetime
 from slugify import slugify
 from pymongo import MongoClient
@@ -23,6 +25,8 @@ with open('UCRPC_Item_List.csv', 'r', encoding='utf-8') as f:
         donor = item[5]
         desc = item[6]
         itemEntry = {
+             "_id": ''.join(random.choices(
+               string.ascii_uppercase + string.digits, k=10)),
              "currentPrice": [],
              "allBidders": [],
              "currentWinners": [],
