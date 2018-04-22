@@ -55,29 +55,25 @@ router.get('/placeBid', function(req, res) {
     return;
   }
   itemId = decodeURIComponent(itemId);
-  console.log(itemId);
   let itemQuery = new Parse.Query('Item');
-  itemQuery.equalTo('id', itemId);
-  itemQuery.first({
+  itemQuery.get(itemId, {
     success: function(item) {
       if (item) {
-        console.log('--');
-        console.log('Found ' + item.get('name'));
+        price = item.get('price');
+        inc = item.get('priceIncrement');
         res.render('bid.html', {
-          price: item.get('price'),
-          inc: item.get('increment'),
+          bid1: price + inc,
+          bid2: price + (inc * 2),
+          bid5: price + (inc * 5),
         });
-        return;
       } else {
-        res.status(404).send('No item found');
+        res.status(404).send('Item could not be found');
       }
     },
-    error: function(err) {
-      res.status(500).send('Query Failed');
-      return;
+    error: function(error) {
+        res.status(500).send('Query Failed');
     },
   });
-  res.status(502).send('Invalid');
 });
 
 router.get('/checkout', function(req, res) {

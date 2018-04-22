@@ -47,7 +47,9 @@
   text-align: right;
   display: block;
 }
-.item-time, .item-fmv {
+.item-time,
+.item-inc,
+.item-fmv {
   color: #CCC;
   font-size: .75em;
   display: block;
@@ -163,6 +165,7 @@
           <span class="item-bidBtn" onclick="showBidDlg('{{ item.get('name') }}', '{{ item.id }}')">Bid Now</span>
           {% endif %}
           <span class="item-time">{{ item.timeMsg }}</span>
+          <span class="item-inc">Bidding Increment: ${{ item.get('priceIncrement') }}</span>
           <span class="item-fmv">Fair Market Value: {{ item.get('fmv') }}</span>
           <p class="item-desc">{{ item.get('description') }}</p>
         </div>
