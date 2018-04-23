@@ -57,6 +57,10 @@ a:focus{
 	max-width: 1130px;
 }
 
+.pure-form input {
+  margin-right: auto;
+  margin-left: auto;
+}
 
 /*    Loader    */
 .loader {

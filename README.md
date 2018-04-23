@@ -3,29 +3,13 @@ Backend code for HubSpot's open-source silent auction app. For an overview of th
 
 The [iOS](https://github.com/HubSpot/BidHub-iOS) and [Android](https://github.com/HubSpot/BidHub-Android) auction apps are backed by [Parse](https://parse.com/), a popular and free backend-as-a-service. Parse handles the database, and also allows you to add server-side logic that occurs when an action is taken (such as a client posting a new bid). This repository contains all of that server-side logic, as well as this helpful README that'll get you set up with Parse.
 
+## Developing
+
+`docker run -it --rm --name bidhub --mount type=bind,target=/home/node/app,src=$(pwd)/src --network internal -p1337:1337 bidhub /bin/bash`
+
 ## Getting Started
 
-1. [Sign up for Parse](https://www.parse.com/home/index#signup). 
-2. `git clone` this repository and edit *config/global.json* to include your app's name, application ID, and master key (you can find these in Parse by going to Settings > Keys). 
-3. [Install the Parse Command Line Tool](https://parse.com/docs/cloud_code_guide).
-4. From the AuctionAppCloudCode directory, run `parse deploy`.
-
-## Initializing the Database
-The `parse deploy` command pushed *cloud/main.js* to Parse. You can see it in Parse by going to Core > Cloud Code. The first two functions contain all of the logic that runs before and after a NewBid is saved, and are run automatically by Parse. The third, *InitializeForAuction*, is a manual job that will set up your Item and NewBid tables with the correct columns. 
-
-To run the job, go to Core > Jobs and click Schedule a Job. Use the settings shown below:
-![Schedule a Job](http://i.imgur.com/Aho6eQK.png)
-
-Scheduling the job should result in the screen below. Click Run Now to run the job. That's it! 
-
-![Run Now](http://i.imgur.com/zxtMHTe.png)
-
-Now, if you go to Data (on the left), you should see the Item and NewBid tables. Item will be populated with a Test Object, and both will have a number of auction-related columns.
-
-![Item and NewBid](http://i.imgur.com/2qFxj7jm.png)
-
-## Adding Items
-The easiest way to add an item is directly from Parse. Go to Core > Data > Item and add either a single item via the +Row button or many items via a CSV import.
+TODO: Write this section
 
 ## Data Models
 That's it! You're all set up, and you can go play with the [iOS](https://github.com/HubSpot/BidHub-iOS) and [Android](https://github.com/HubSpot/BidHub-Android) apps now. You can also grab the [Web Panel](https://github.com/HubSpot/BidHub-WebAdmin) to keep an eye on the auction. If you're interested in the data models, read on for a short description.

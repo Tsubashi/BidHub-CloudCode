@@ -49,9 +49,10 @@ router.get('/', function(req, res) {
 router.get('/placeBid', function(req, res) {
   let itemId = req.query.id;
   if (!itemId) {
-    res.send(404, 'It looks like you are missing the item ID, so I cannot '
-                + 'tell which item you are bidding on. Please go back and '
-                + 'try again');
+    res.status(422);
+    res.send( 'It looks like you are missing the item ID, so I cannot '
+            + 'tell which item you are bidding on. Please go back and '
+            + 'try again');
     return;
   }
   itemId = decodeURIComponent(itemId);
@@ -65,6 +66,7 @@ router.get('/placeBid', function(req, res) {
           bid1: price + inc,
           bid2: price + (inc * 2),
           bid5: price + (inc * 5),
+          itemId: itemId,
         });
       } else {
         res.status(404).send('Item could not be found');
@@ -74,6 +76,32 @@ router.get('/placeBid', function(req, res) {
         res.status(500).send('Query Failed');
     },
   });
+});
+
+router.post('/placeBid', function(req, res) {
+  Parse.User.enableUnsafeCurrentUser();
+  let user = Parse.User.current();
+  let itemId = req.body.id;
+  let bidAmount = req.body.bidAmount;
+  if (!itemId || !bidAmount) {
+    res.status(422).send('Your request is missing an item ID or bid amount.');
+    return;
+  }
+  let NewBid = Parse.Object.extend('NewBid');
+  let bid = new NewBid();
+  bid.set('item', itemId);
+  bid.set('maxBid', bidAmount);
+  bid.set('email', user.get('email'));
+  bid.set('name', user.get('fullname'));
+  bid.save(null, {
+    success: function(bid) {
+      res.send('Congratulations, your bid is winning!');
+    },
+    error: function(bid) {
+      res.status(403).send(err.message);
+    },
+  });
+  res.send(req.body.bidAmount);
 });
 
 router.get('/checkout', function(req, res) {

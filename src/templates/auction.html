@@ -107,42 +107,7 @@
 
 {% block extraJS %}
   <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
-  <script>
-    function showBidDlg(itemName, itemId) {
-      $.get('/user/login_status', function(data, status, xhr) {
-        showBidDlg_(itemName, itemId);
-      }).fail(function() {
-        window.location.replace('/user/login?nextUrl='+ encodeURIComponent('/auction'));
-      });
-    }
-    function showBidDlg_(itemName, itemId) {
-      dlg = $('#bidDialog');
-      dlg.html('<div class="loader" style="margin: 0 auto"></div>');
-      dlg.dialog({
-        modal: true,
-        closeOnEscape: true,
-        width: '75%',
-        show: { effect: "scale", duration: 200 },
-        hide: { effect: "scale", duration: 200 },
-        create: function(event, ui) {
-          $(this).parent().css("max-width", "500px");
-        }
-      }); 
-      dlg.dialog('open'); 
-      dlg.load('auction/placeBid?id=' + encodeURIComponent(itemId), 
-        function(response, status, xhr) {
-          if (status === "error") {
-            dlg.dialog( "option", "title", "Error" );
-            var msg = "While trying to open the bidding interface, I ran into an error: ";
-            dlg.html( msg + xhr.status + ": " + response );
-          } else {
-            dlg.dialog( "option", "title", itemName );
-          }
-          dlg.dialog( "option", "position", { my: "center", at: "center", of: window } );
-        }
-      );
-    }
-  </script>
+	<script type="text/javascript" src="/static/js/bidDlg.js"></script>
 {% endblock %}
 
 {% block main %}
@@ -150,7 +115,7 @@
 <div class="pure-g">
   {% for item in items %}
   <div class="item-container pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4">
-    <div class="item-card">
+    <div class="item-card" id="{{ item.id }}">
       <img class="item-img pure-img" src="{{ item.get('imageurl') }}" alt="Image of {{ item.get('name') }}" />
       <div class="item-text">
         <div class="item-header pure-g">
