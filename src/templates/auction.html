@@ -112,6 +112,16 @@
   font-size: .8em;
   color: #EEF;
 }
+#auction-bar {
+  background-color: #AAA;
+  border-radius: 4px;
+}
+#checkout-box {
+  text-align: right;
+}
+#checkout-box img {
+  width: 32px;
+}
 </style>
 {% endblock %}
 
@@ -122,6 +132,17 @@
 
 {% block main %}
 <div id="bidDialog"></div>
+<div id="auction-bar" class="pure-g">
+  <div class="pure-u-1-2">
+    <span></span>
+  </div>
+  <div class="pure-u-1-4">
+    
+  </div>
+  <div class="pure-u-1-4" id="checkout-box">
+    <a href="/auction/checkout">Checkout<img alt="Checkout" src="/static/img/checkout.png" /></a>
+  </div>
+</div>
 <div class="pure-g">
   {% for item in items %}
     <div class="item-container pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4">
