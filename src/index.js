@@ -20,7 +20,7 @@ if (process.env.NODE_ENV == 'Production') {
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({
   secret: 'iUCRPC',
-  cookie: {maxAge: 60000},
+  cookie: {maxAge: 7200000},
   resave: false,
   saveUninitialized: false,
 }));
