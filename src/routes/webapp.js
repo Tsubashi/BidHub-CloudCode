@@ -166,7 +166,6 @@ router.get('/checkout', function(req, res) {
   let email = user.get('email');
   let itemQuery = new Parse.Query('Item');
   itemQuery.equalTo('currentWinners', email);
-  // TODO: itemQuery.greaterThan('closetime', now);
 
   itemQuery.find({
     success: function(itemsWon) {
@@ -174,6 +173,10 @@ router.get('/checkout', function(req, res) {
       let totalPrice = 0;
       let totalDue = 0;
       itemsWon.forEach(function(item) {
+        // Check if the item is closed
+        if (moment(item.get('closetime')).isAfter()) {
+          return;
+        }
         totalPrice += item.get('price');
         let isPurchased = '';
         if (item.get('paidFor')) {
@@ -211,6 +214,14 @@ router.get('/checkout', function(req, res) {
         errors: err,
       });
     },
+  }).fail(function(err) {
+    res.render('error.html', {
+      title: 'Checkout Error',
+      heading: 'Curses! I bungled your checkout.',
+      msg: 'While I was trying to figure out what you won, something went '
+         + 'wrong.',
+      errors: [err],
+    });
   });
 });
 
