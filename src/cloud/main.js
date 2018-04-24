@@ -77,13 +77,13 @@ Parse.Cloud.beforeSave('NewBid', function(request, response) {
           // Build an object mapping email addresses to their highest bids.
           let bidsForEmails = {};
           allWinningBids.forEach(function(bid) {
-          let curBid = bidsForEmails[bid.get('email')];
-          if (curBid) {
-            bidsForEmails[bid.get('email')] =
-              (curBid.get('maxBid') > bid.get('maxBid') ? curBid : bid);
-          } else {
-            bidsForEmails[bid.get('email')] = bid;
-          }
+            let curBid = bidsForEmails[bid.get('email')];
+            if (curBid) {
+              bidsForEmails[bid.get('email')] =
+                (curBid.get('maxBid') > bid.get('maxBid') ? curBid : bid);
+            } else {
+              bidsForEmails[bid.get('email')] = bid;
+            }
           });
 
           // Get this bidder's last bid and make sure the new bid is an
@@ -91,7 +91,8 @@ Parse.Cloud.beforeSave('NewBid', function(request, response) {
           // If the new bid is higher, remove the old bid.
           let previousMaxBid = bidsForEmails[currentBid.get('email')];
           if (previousMaxBid) {
-            if (currentBid.get('maxBid') <= previousMaxBid.get('maxBid')) {
+            if (Number(currentBid.get('maxBid')) <=
+                Number(previousMaxBid.get('maxBid'))) {
               response.error('You already bid $' + previousMaxBid.get('maxBid')
                              + ' - you need to raise your bid!');
               return;
@@ -102,11 +103,9 @@ Parse.Cloud.beforeSave('NewBid', function(request, response) {
 
           // Build an array of all the winning bids.
           allWinningBids = [];
-          for (let key in bidsForEmails) {
-            if ({}.hasOwnProperty.call(foo, key)) {
-              allWinningBids.push(bidsForEmails[key]);
-            }
-          }
+          Object.keys(bidsForEmails).forEach(function(key, index) {
+              allWinningBids.push(this[index]);
+          }, bidsForEmails);
 
           // Add the new bid and sort by amount, secondarily sorting by time.
           allWinningBids.push(currentBid);
@@ -176,6 +175,9 @@ Parse.Cloud.beforeSave('NewBid', function(request, response) {
                 console.error(error);
                 response.error('Something went wrong - try again?');
               },
+            }).fail(function(error) {
+              console.error('Failure: ' + error.code + ' ' + error.message);
+              response.error('Failure: ' + error.code + ' ' + error.message);
             });
           } else { // If it's not, someone else probably outbid you.
             response.error('Looks like you\'ve been outbid! Check the new '
@@ -187,12 +189,18 @@ Parse.Cloud.beforeSave('NewBid', function(request, response) {
           console.error('Error: ' + error.code + ' ' + error.message);
           response.error('Error: ' + error.code + ' ' + error.message);
         },
+      }).fail(function(error) {
+        console.error('Failure: ' + error.code + ' ' + error.message);
+        response.error('Failure: ' + error.code + ' ' + error.message);
       });
     },
     error: function(error) {
         console.error('Error: ' + error.code + ' ' + error.message);
         response.error('Error: ' + error.code + ' ' + error.message);
     },
+  }).fail(function(error) {
+    console.error('Failure: ' + error.code + ' ' + error.message);
+    response.error('Failure: ' + error.code + ' ' + error.message);
   });
 });
 

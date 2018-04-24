@@ -99,8 +99,18 @@
 	transition: all .2s linear;
 }
 .bid-amount:hover,
-.bid-amount:focus, {
-  color: #005585;
+.bid-amount:focus {
+  color: #409bce;
+}
+.isWinning {
+  background-color: #045a04;
+}
+.isLosing {
+  background-color: #ea9400;
+}
+.item-bid-message {
+  font-size: .8em;
+  color: #EEF;
 }
 </style>
 {% endblock %}
@@ -114,29 +124,41 @@
 <div id="bidDialog"></div>
 <div class="pure-g">
   {% for item in items %}
-  <div class="item-container pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4">
-    <div class="item-card" id="{{ item.id }}">
-      <img class="item-img pure-img" src="{{ item.get('imageurl') }}" alt="Image of {{ item.get('name') }}" />
-      <div class="item-text">
-        <div class="item-header pure-g">
-          <span class="item-name pure-u-4-5">{{ item.get('name') }}</span>
-          <div class="pure-u-1-5">
-            <span class="item-price">${{ item.get('price') }}</span>
-            <span class="item-bids">{{ item.get('numberOfBids') }} Bid{% if item.get('numberOfBids') != 1 %}s{% endif %}</span>
+    <div class="item-container pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4">
+      <div class="item-card" id="{{ item.id }}">
+        <img class="item-img pure-img" src="{{ item.get('imageurl') }}" alt="Image of {{ item.get('name') }}" />
+        <div class="item-text">
+          <div class="item-header pure-g 
+            {% if item.userIsWinning %}
+              isWinning
+            {% else %}
+              {% if item.userIsLosing %}
+                isLosing
+              {% endif %}
+            {% endif %}
+            ">
+            <span class="item-name pure-u-4-5">{{ item.get('name') }}</span>
+            <div class="pure-u-1-5">
+              <span class="item-price">${{ item.get('price') }}</span>
+              <span class="item-bids">{{ item.get('numberOfBids') }} Bid{% if item.get('numberOfBids') != 1 %}s{% endif %}</span>
+            </div>
+            {% if item.userHasBid %}
+              <span class="item-bid-message pure-u-4-5">{{ item.bidMessage }}</span>
+            {% endif %}
+              
           </div>
-        </div>
-        <div class="item-desc">
-          {% if item.isBiddable %}
-          <span class="item-bidBtn" onclick="showBidDlg('{{ item.get('name') }}', '{{ item.id }}')">Bid Now</span>
-          {% endif %}
-          <span class="item-time">{{ item.timeMsg }}</span>
-          <span class="item-inc">Bidding Increment: ${{ item.get('priceIncrement') }}</span>
-          <span class="item-fmv">Fair Market Value: {{ item.get('fmv') }}</span>
-          <p class="item-desc">{{ item.get('description') }}</p>
+          <div class="item-desc">
+            {% if item.isBiddable and not item.userIsWinning %}
+              <span class="item-bidBtn" onclick="showBidDlg('{{ item.get('name') }}', '{{ item.id }}')">Bid Now</span>
+            {% endif %}
+            <span class="item-time">{{ item.timeMsg }}</span>
+            <span class="item-inc">Bidding Increment: ${{ item.get('priceIncrement') }}</span>
+            <span class="item-fmv">Fair Market Value: {{ item.get('fmv') }}</span>
+            <p class="item-desc">{{ item.get('description') }}</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   {% endfor %}
 </div>
 {% endblock %}

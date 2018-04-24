@@ -10,7 +10,9 @@ router.get('/', function(req, res) {
   let itemQuery = new Parse.Query('Item');
   itemQuery.find({
     success: function(list) {
+      // Add a few extra properties that we will use in the template
       list.forEach(function(item, index, items) {
+        // Set a message for when the item is opening/closing
         opentime = item.get('opentime');
         closetime = item.get('closetime');
         items[index].isBiddable = false;
@@ -25,6 +27,37 @@ router.get('/', function(req, res) {
           items[index].timeMsg = 'Bidding closed '
                                + moment(closetime).fromNow();
         }
+
+        // Determine if the user is winning
+        items[index].bidMessage = '';
+        items[index].userIsWinning =
+          (item.get('currentWinners').indexOf(user.get('email')) > -1);
+        if (items[index].userIsWinning) {
+          items[index].bidMessage = 'Congrats, you have the winning '
+                                  + 'bid!';
+        }
+        // Determine if the user is losing
+        items[index].userIsLosing =
+          (item.get('previousWinners').indexOf(user.get('email')) > -1)
+          && !items[index].userIsWinning;
+        if (items[index].userIsLosing) {
+          let interjections = [
+            'Awww Man', 'Drat', 'Dangit', 'Yikes', 'Uh oh', 'Oh no',
+          ];
+          let opening =
+            interjections[Math.floor(Math.random() * interjections.length)];
+          let statements = [
+            'Don\'t let them get away with it!',
+            'Surely you won\'t stand for this!',
+            'Try harder!',
+          ];
+          let ending =
+            statements[Math.floor(Math.random() * statements.length)];
+          items[index].bidMessage = opening + '! You were outbid. ' + ending;
+        }
+        // Determine if the user has bid
+        items[index].userHasBid =
+          (item.get('allBidders').indexOf(user.get('email')) > -1);
       });
       res.render('auction.html', {
         title: 'Main Auction',
@@ -43,6 +76,14 @@ router.get('/', function(req, res) {
         errors: err,
       });
     },
+  }).fail(function(err) {
+    res.render('error.html', {
+      title: 'List Creation Failure',
+      heading: 'Confound It! I failed to get the item list.',
+      msg: 'While I was trying to get and parse the item list, something went '
+         + 'wrong.',
+      errors: [err],
+    });
   });
 });
 
@@ -81,27 +122,34 @@ router.get('/placeBid', function(req, res) {
 router.post('/placeBid', function(req, res) {
   Parse.User.enableUnsafeCurrentUser();
   let user = Parse.User.current();
+  if (!user) {
+    res.status(403).send('You must be logged in to do that!');
+    return;
+  }
   let itemId = req.body.id;
   let bidAmount = req.body.bidAmount;
   if (!itemId || !bidAmount) {
     res.status(422).send('Your request is missing an item ID or bid amount.');
     return;
   }
+  email = user.get('email');
+  fullname = user.get('fullname');
   let NewBid = Parse.Object.extend('NewBid');
   let bid = new NewBid();
   bid.set('item', itemId);
   bid.set('maxBid', bidAmount);
-  bid.set('email', user.get('email'));
-  bid.set('name', user.get('fullname'));
+  bid.set('email', email);
+  bid.set('name', fullname);
   bid.save(null, {
     success: function(bid) {
       res.send('Congratulations, your bid is winning!');
     },
-    error: function(bid) {
+    error: function(bid, err) {
       res.status(403).send(err.message);
     },
+  }).fail(function(err) {
+      res.status(500).send(err.message);
   });
-  res.send(req.body.bidAmount);
 });
 
 router.get('/checkout', function(req, res) {
