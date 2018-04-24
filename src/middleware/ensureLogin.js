@@ -6,8 +6,6 @@
  *                        route
  */
 function ensureLogin(req, res, next) {
-  Parse.User.enableUnsafeCurrentUser();
-  let currentUser = Parse.User.current();
   // If the user is coming from the app, they will set the 'user' GET parameter.
   // Use this parameter to log them on here too.
   //
@@ -18,6 +16,7 @@ function ensureLogin(req, res, next) {
   if (req.query.hasOwnProperty('user')) {
     Parse.User.logIn(req.query.user, 'test', {
       success: function(user) {
+        req.session.token = user.getSessionToken();
         next();
       },
       error: function(user, err) {
@@ -32,14 +31,26 @@ function ensureLogin(req, res, next) {
       },
     });
   } else {
-    if (currentUser) {
-      next();
-      return;
-    } else {
+    if (!req.session || !req.session.token) { // Not logged in
       res.redirect('/user/login?nextUrl=' + encodeURIComponent(req.originalUrl)
                   );
       return;
     }
+
+    Parse.Cloud.httpRequest({
+      url: Parse.serverURL + '/users/me',
+      headers: {
+        'X-Parse-Application-Id': process.env.APP_ID,
+        'X-Parse-Session-Token': req.session.token,
+      },
+    }).then(function(userData) {
+      req.user = Parse.Object.fromJSON(userData.data);
+      next();
+    }, function(error) {
+      res.redirect('/user/login?nextUrl=' + encodeURIComponent(req.originalUrl)
+                  );
+      return;
+    });
   }
 }
 

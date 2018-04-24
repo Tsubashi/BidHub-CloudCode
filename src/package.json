@@ -13,6 +13,7 @@
     "braintree": "~2.8.0",
     "dotenv": "~5.0.1",
     "express": "~4.11.x",
+    "express-session": "^1.15.6",
     "kerberos": "~0.0.x",
     "moment": "^2.22.1",
     "npm": "^5.8.0",

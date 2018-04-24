@@ -5,8 +5,7 @@ let moment = require('moment');
 // ////////////////
 // ROUTES
 router.get('/', function(req, res) {
-  Parse.User.enableUnsafeCurrentUser();
-  let user = Parse.User.current();
+  let user = req.user;
   let itemQuery = new Parse.Query('Item');
   itemQuery.find({
     success: function(list) {
@@ -38,7 +37,7 @@ router.get('/', function(req, res) {
         }
         // Determine if the user is losing
         items[index].userIsLosing =
-          (item.get('previousWinners').indexOf(user.get('email')) > -1)
+          (item.get('allBidders').indexOf(user.get('email')) > -1)
           && !items[index].userIsWinning;
         if (items[index].userIsLosing) {
           let interjections = [
@@ -120,8 +119,7 @@ router.get('/placeBid', function(req, res) {
 });
 
 router.post('/placeBid', function(req, res) {
-  Parse.User.enableUnsafeCurrentUser();
-  let user = Parse.User.current();
+  let user = req.user;
   if (!user) {
     res.status(403).send('You must be logged in to do that!');
     return;
@@ -153,8 +151,7 @@ router.post('/placeBid', function(req, res) {
 });
 
 router.get('/checkout', function(req, res) {
-  Parse.User.enableUnsafeCurrentUser();
-  let user = Parse.User.current();
+  let user = req.user;
   if (!user) {
     res.render('error.html', {
       title: 'Authn Error',

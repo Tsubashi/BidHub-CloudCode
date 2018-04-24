@@ -4,15 +4,9 @@ let router = express.Router(); // eslint-disable-line new-cap
 // ////////////////
 // ROUTES
 router.get('/logout', function(req, res) {
-  Parse.User.enableUnsafeCurrentUser();
-  let currentUser = Parse.User.current();
-  if (currentUser) {
-    Parse.User.logOut().then(() => {
-      res.redirect('/');
-    });
-  } else {
+  Parse.User.logOut().then(() => {
     res.redirect('/');
-  }
+  });
 });
 
 router.get('/login', function(req, res) {
@@ -33,6 +27,7 @@ router.post('/login', function(req, res) {
   }
   Parse.User.logIn(email, 'test', {
     success: function(user) {
+      req.session.token = user.getSessionToken();
       nextUrl = decodeURIComponent(req.body.nextUrl);
       if (nextUrl) {
         res.redirect(nextUrl);
@@ -75,6 +70,27 @@ router.post('/login', function(req, res) {
         });
       }
     },
+  });
+});
+
+router.get('/login_status', function(req, res) {
+  if (!req.session || !req.session.token) { // Not logged in
+    res.status(403).send('Not Logged In');
+    return;
+  }
+
+  Parse.Cloud.httpRequest({
+    url: Parse.serverURL + '/users/me',
+    headers: {
+      'X-Parse-Application-Id': process.env.APP_ID,
+      'X-Parse-Session-Token': req.session.token,
+    },
+  }).then(function(userData) {
+    res.status(200).send('Logged In');
+    return;
+  }, function(error) {
+    res.status(403).send('Not Logged In');
+    return;
   });
 });
 

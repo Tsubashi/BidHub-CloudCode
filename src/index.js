@@ -3,6 +3,7 @@
 console.log('Setting up Server...');
 require('dotenv').config();
 let express = require('express');
+let session = require('express-session');
 let bodyParser = require('body-parser');
 let path = require('path');
 let nunjucks = require('nunjucks');
@@ -17,6 +18,13 @@ if (process.env.NODE_ENV == 'Production') {
 // ////////////////
 // ROUTES
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(session({
+  secret: 'iUCRPC',
+  cookie: {maxAge: 60000},
+  resave: false,
+  saveUninitialized: false,
+}));
+
 
 console.log('. Adding Static Routes');
 app.use('/static', express.static(path.join(__dirname, '/static')));
@@ -39,18 +47,6 @@ app.get('/rules.html', function(req, res) {
 
 console.log('. Adding Parse Routes');
 app.use('/parse', require('./routes/parse.js'));
-app.get('/user/login_status', function(req, res) {
-  Parse.User.enableUnsafeCurrentUser();
-  let currentUser = Parse.User.current();
-  if (currentUser) {
-    res.status(200).send('Logged In');
-    return;
-  } else {
-    res.status(403).send('Not Logged In');
-    return;
-  }
-  res.status(500).send('I don\'t even know.');
-});
 
 console.log('. Adding Login Middleware');
 app.use('/user', require('./routes/login.js'));
