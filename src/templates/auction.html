@@ -122,6 +122,9 @@
 #checkout-box img {
   width: 32px;
 }
+.sponsor-label {
+  font-weight: bold;
+}
 </style>
 {% endblock %}
 
@@ -176,6 +179,7 @@
             <span class="item-inc">Bidding Increment: ${{ item.get('priceIncrement') }}</span>
             <span class="item-fmv">Fair Market Value: {{ item.get('fmv') }}</span>
             <p class="item-desc">{{ item.get('description') }}</p>
+            <p class="sponsor"><span class="sponsor-label">Sponsored by: </span>{{ item.get('donorname') }}</p>
           </div>
         </div>
       </div>
