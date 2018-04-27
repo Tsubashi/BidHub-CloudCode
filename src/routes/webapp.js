@@ -16,10 +16,10 @@ router.get('/', function(req, res) {
         closetime = item.get('closetime');
         items[index].isBiddable = false;
         if (moment(opentime).isAfter()) {
-          items[index].timeMsg = 'Bidding opens in '
+          items[index].timeMsg = 'Bidding opens '
                                + moment(opentime).fromNow();
         } else if (moment(closetime).isAfter()) {
-          items[index].timeMsg = 'Bidding closes in '
+          items[index].timeMsg = 'Bidding closes '
                                + moment(closetime).fromNow();
           items[index].isBiddable = true;
         } else {
