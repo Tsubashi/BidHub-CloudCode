@@ -40,8 +40,7 @@ router.get('/checkout', function(req, res) {
 });
 
 router.post('/checkout', function(req, res) {
-  Parse.User.enableUnsafeCurrentUser();
-  user = Parse.User.current();
+  user = req.user;
   let email = user.get('email');
   let clientNonce = req.body.payment_method_nonce;
   let itemQuery = new Parse.Query('Item');
@@ -49,17 +48,14 @@ router.post('/checkout', function(req, res) {
 
   itemQuery.find({
     success: function(itemsWon) {
-      console.log('email: ' + email);
       let totalDue = 0;
       itemsWon.forEach(function(item) {
-        console.log('Processing: ' + item.get('name'));
         if (!item.get('paidFor')) {
           totalDue += item.get('price');
         }
       });
-      console.log('Due: ' + totalDue + ' Expected: ' + res.body.total);
 
-      if (totalDue != res.body.total) {
+      if (totalDue != req.body.total) {
         res.render('error.html', {
           title: 'Mismatched Total',
           heading: 'That doesn\'t look right...',
@@ -67,7 +63,7 @@ router.post('/checkout', function(req, res) {
              + 'Maybe you won another item? Go back to the payment page to '
              + 'check.',
           errors: ['Total amount charged: ' + totalDue,
-                   'Total expected: ' + res.body.total,
+                   'Total expected: ' + req.body.total,
                   ],
         });
       }
@@ -94,6 +90,14 @@ router.post('/checkout', function(req, res) {
       });
     },
     // TODO: Handle Error
+  }).fail(function(err) {
+   res.render('error.html', {
+      title: 'Checkout Failure',
+      heading: 'Well, this is embarrasing',
+      msg: 'I botched the actual checkout part. I am afraid I will need to '
+         + 'ask you to do it all over again.',
+      errors: [err],
+    });
   });
 });
 
