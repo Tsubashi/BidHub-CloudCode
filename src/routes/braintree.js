@@ -1,6 +1,7 @@
 let braintree = require('braintree');
 let express = require('express');
 let router = express.Router(); // eslint-disable-line new-cap
+let moment = require('moment');
 
 // ////////////////
 // SETUP
@@ -50,6 +51,9 @@ router.post('/checkout', function(req, res) {
     success: function(itemsWon) {
       let totalDue = 0;
       itemsWon.forEach(function(item) {
+        if (moment(item.get('closetime')).isAfter()) {
+          return;
+        }
         if (!item.get('paidFor')) {
           totalDue += item.get('price');
         }
@@ -76,6 +80,53 @@ router.post('/checkout', function(req, res) {
         },
       }, function(err, result) {
         if (result.success || result.transaction) {
+          let itemQuery = new Parse.Query('Item');
+          itemQuery.equalTo('currentWinners', email);
+
+          let failures = [];
+          itemQuery.find({
+            success: function(items) {
+              items.forEach(function(item) {
+                item.set('paidFor', true);
+                item.save(null, {
+                  success: function(item) {
+                    // Not sure what to do here
+                  },
+                }).fail(function(err) {
+                  // log failure?
+                  failures.push(item.get('name'));
+                });
+              });
+            },
+          }).fail(function(err) {
+             res.render('error.html', {
+                 title: 'Recording Error',
+                 heading: 'This is bad. DO NOT RELOAD.',
+                 msg: 'I was able to process your payment correctly, but '
+                    + 'something went wrong when I tried to record it in '
+                    + 'our database. DO NOT attempt to check out again. '
+                    + 'If you do, it will charge you twice. Your transaction '
+                    + 'ID is ' + result.transaction.id + '. Please show this '
+                    + 'page to a moderator and have them manually record this '
+                    + 'transaction.',
+                 errors: [err],
+             });
+          });
+          if (failures.length > 0) {
+            res.render('error.html', {
+                 title: 'Recording Error',
+                 heading: 'This is bad. DO NOT RELOAD.',
+                 msg: 'I was able to process your payment correctly, but '
+                    + 'something went wrong when I tried to record it in '
+                    + 'our database. DO NOT attempt to check out again. '
+                    + 'If you do, it will charge you twice. Your transaction '
+                    + 'ID is ' + result.transaction.id + '. Please show this '
+                    + 'page to a moderator and have them manually record this '
+                    + 'transaction.',
+                 errors: [failures],
+            });
+            return;
+          }
           res.redirect('/auction/checkout?txid=' + result.transaction.id);
         } else {
           transactionErrors = result.errors.deepErrors();
@@ -89,7 +140,6 @@ router.post('/checkout', function(req, res) {
         }
       });
     },
-    // TODO: Handle Error
   }).fail(function(err) {
    res.render('error.html', {
       title: 'Checkout Failure',
