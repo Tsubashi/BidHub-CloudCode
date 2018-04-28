@@ -13,6 +13,8 @@ client = MongoClient('localhost', 27017)
 db = client['auction']
 coll = db['Item']
 
+coll.delete_many({})
+
 with open('UCRPC_Item_List.csv', 'r', encoding='utf-8') as f:
     items = csv.reader(f, delimiter=",", quotechar='"')
     itemList = []
@@ -31,7 +33,7 @@ with open('UCRPC_Item_List.csv', 'r', encoding='utf-8') as f:
              "allBidders": [],
              "currentWinners": [],
              "previousWinners": [],
-             "opentime": dateutil.parser.parse("2018-04-28T16:00:00.000Z"),
+             "opentime": dateutil.parser.parse("2018-04-26T16:00:00.000Z"),
              "closetime": dateutil.parser.parse("2018-04-28T21:00:00.000Z"),
              "name": name,
              "description": desc,
