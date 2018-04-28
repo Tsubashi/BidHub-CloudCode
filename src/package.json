@@ -15,6 +15,7 @@
     "express": "~4.11.x",
     "express-session": "^1.15.6",
     "kerberos": "~0.0.x",
+    "mailgun-js": "^0.17.0",
     "moment": "^2.22.1",
     "npm": "^5.8.0",
     "nunjucks": "~3.1.0",

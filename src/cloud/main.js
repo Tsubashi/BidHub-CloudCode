@@ -1,3 +1,7 @@
+let apiKey = 'key-6d84442fc7f44c668cb5a9273b41af70';
+let domain = 'auction.ucrpc.org';
+let mailgun = require('mailgun-js')({apiKey: apiKey, domain: domain});
+
 // Utility to get items unique to either array.
 Array.prototype.diff = function(a) { // eslint-disable-line no-extend-native
   return this.filter(function(i) {
@@ -229,6 +233,7 @@ Parse.Cloud.afterSave('NewBid', function(request, response) {
       query.containedIn('email', previousWinners.diff(
         item.get('currentWinners'))
       );
+      lastWinner = previousWinners.diff(item.get('currentWinners'))[0];
 
       // We'll refer to the bidder by their name if it's set...
       let identity = currentBid.get('name').split('@')[0];
@@ -240,6 +245,19 @@ Parse.Cloud.afterSave('NewBid', function(request, response) {
       }
 
       // Fire the push.
+      let data = {
+        from: 'Auction Master <auctionmaster@ucrpc.org>',
+        to: lastWinner,
+        subject: 'You have been outbid on ' + item.get('name'),
+        text: 'It looks like someone else bid $' + currentBid.get('maxBid')
+            + ' on ' + item.get('name') + ', which means you are no longer '
+            + 'winning! Head back to the auction (https://auction.ucrpc.org/'
+            + 'auction#' + item.id + ') to outbid them!',
+      };
+
+      mailgun.messages().send(data, function(error, body) {
+        console.log('email sent to: ' + lastWinner);
+      });
       Parse.Push.send({
         where: query,
         data: {
