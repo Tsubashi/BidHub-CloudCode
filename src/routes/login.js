@@ -4,9 +4,8 @@ let router = express.Router(); // eslint-disable-line new-cap
 // ////////////////
 // ROUTES
 router.get('/logout', function(req, res) {
-  Parse.User.logOut().then(() => {
-    res.redirect('/');
-  });
+  req.session.token = '';
+  res.redirect('/');
 });
 
 router.get('/login', function(req, res) {
