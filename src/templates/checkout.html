@@ -42,58 +42,10 @@
 {% else %} <!-- No txid -->
   {% if totalDue > 0 %}
   <div id="payment-box">
-    <div class="loader"></div>
-  </div>
+      <h1> Checkout</h1>
+      <p>Thank you for your participation. Please show this page to a moderator who will help you check out.</p>
+      <p>If you are checking out online, please use our <a href="https://www.paypal.com/donate/?token=UIvyGRnWq0JMbdO4RHP2jutZEsfiUClMkbsSmqOIT3q99tXJms0Q_g4oAcuw-14mkSXYwG&country.x=US&locale.x=US">Donation Page</a> to make a donation equal to the total amount of the bids you won. Keep a copy of the confirmation page, and present it when you go to pick up your item.</p>
 
-  <form id="payment-form" action="/payment/checkout" method="post">
-    <input id="nonce" type="hidden" name="payment_method_nonce"></input>
-    <input id="total" type="hidden" name="total" value="{{ total }}"></input>
-    <button id="submit-button" type="submit" style="display: none; border-radius: 4px;">Submit Payment</button>
-  </form>
-
-  <script>
-  // Get our Payment Token
-  var result = $.get("/payment/client_token", function(data, status) {
-    var submitButton = document.querySelector('#submit-button');
-    var paymentBox = document.querySelector('#payment-box');
-    var form = document.querySelector("#payment-form");
-      
-    paymentBox.innerHTML = "";
-
-    braintree.dropin.create({
-      authorization: data,
-      selector: '#payment-box',
-      paypal: {
-        flow: 'vault'
-      }
-    }, function (err, dropinInstance) {
-      if (err) {
-        // Handle any errors that might've occurred when creating Drop-in
-        document.getElementById('payment-box').innerHTML = "<h1>Oops! X_x</h1><p>Something went wrong when I tried to contact our payment service. Please reload the page and try again!</p>";
-
-        console.error(err);
-        return;
-      }
-      submitButton.style.display = "block";
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        dropinInstance.requestPaymentMethod(function (err, payload) {
-          if (err) {
-            // Handle errors in requesting payment method
-            return; 
-          } 
-
-          // Send payload.nonce to our server
-          document.querySelector("#nonce").value = payload.nonce;
-          form.submit();
-        });
-      });
-    });
-  }).fail(function() {
-    document.getElementById('payment-box').innerHTML = "<h1>Oh dear! X_x</h1><p>Something went wrong when I tried to generate a payment token for our payment service. Please reload the page and try again!</p>";
-  });
-  </script>
   {% else %} <!-- totalDue > 0 -->
     {% if items | length > 0 %}
       <h1>Woohoo!</h1>
