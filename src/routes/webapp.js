@@ -102,12 +102,21 @@ router.get('/placeBid', function(req, res) {
       if (item) {
         price = item.get('price');
         inc = item.get('priceIncrement');
-        res.render('bid.html', {
-          bid1: price + inc,
-          bid2: price + (inc * 2),
-          bid5: price + (inc * 5),
-          itemId: itemId,
-        });
+        if (item.get('numberOfBids') == 0) {
+          res.render('bid.html', {
+            bid1: price,
+            bid2: price + inc,
+            bid5: price + (inc * 4),
+            itemId: itemId,
+          });
+        } else {
+          res.render('bid.html', {
+            bid1: price + inc,
+            bid2: price + (inc * 2),
+            bid5: price + (inc * 5),
+            itemId: itemId,
+          });
+        }
       } else {
         res.status(404).send('Item could not be found');
       }
