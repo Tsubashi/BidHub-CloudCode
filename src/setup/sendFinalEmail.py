@@ -15,10 +15,10 @@ for item in coll.find():
         winners[key].append((item["name"], item["price"]))
 
 key = 'key-6d84442fc7f44c668cb5a9273b41af70'
-to = '8th.realm@gmail.com'
 for winner, item in winners.items():
     total = 0
     itemList = ''
+    to = winner
     for name, price in item:
         itemList += ("<li>{} - ${}</li>".format(name, price))
         total += price
