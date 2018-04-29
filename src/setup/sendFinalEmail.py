@@ -18,6 +18,7 @@ key = 'key-6d84442fc7f44c668cb5a9273b41af70'
 for winner, item in winners.items():
     total = 0
     itemList = ''
+    print(winner)
     to = winner
     for name, price in item:
         itemList += ("<li>{} - ${}</li>".format(name, price))
