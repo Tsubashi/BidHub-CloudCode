@@ -10,3 +10,11 @@ coll = db['Item']
 total = 0
 for item in coll.find():
     total += item["price"]
+
+print("Total Earned: ${}".format(total))
+
+users = []
+for item in coll.find():
+    for user in item["allBidders"]:
+        users.extend(user)
+print("Total bidders: {}".format(len(set(users))))
